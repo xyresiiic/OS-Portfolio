@@ -26,11 +26,7 @@ const BIO_DATA = {
 My work spans from developing intelligent AI systems to crafting premium brand identities. I believe the best digital products are engineered with precision and designed with soul.
 
 Beyond development, I'm building @nazrithm — a Creative Studio focused on design, reels, and brand strategy. Because real impact comes from building brands, not just shipping code.`,
-  asciiArt: `
-/\_/\
-( o.o) 
-> ^ < 
-  `,
+  asciiArt: `+---------+\n|  /\\_/\\  |\n| ( o.o ) |\n|  > ^ <  |\n+---------+`,
   quickFacts: [
     { label: "DEGREE", value: "B.Tech Computer Science (2022-2028)" },
     { label: "COLLEGE", value: "Arya College of Engineering, Jaipur" },
