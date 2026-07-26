@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veer Pratap Singh — Retro OS Portfolio</title>
+  <meta name="description" content="Veer Pratap Singh — Creative Developer & Digital Storyteller. Monochrome Retro Windows OS Portfolio.">
+  <meta name="author" content="Veer Pratap Singh">
+  <!-- Google Fonts: VT323 for retro chrome/boot, IBM Plex Mono for clean body monospace -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- CRT Scanline & Vignette Effect Overlay -->
+  <div id="crt-overlay" class="crt-overlay"></div>
+
+  <!-- Boot Screen Sequence -->
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-content">
+      <div class="boot-header">NAZRITHM BIOS v1.0.95 (VEER PRATAP SINGH EDITION)</div>
+      <div class="boot-header">Copyright (C) 2026, Veer Pratap Singh - Creative Developer</div>
+      <br>
+      <div id="boot-log" class="boot-log"></div>
+      <div class="boot-progress-container">
+        <div id="boot-progress-bar" class="boot-progress-bar"></div>
+      </div>
+      <div class="boot-skip-hint">[ PRESS ANY KEY OR CLICK TO SKIP BOOT ]</div>
+    </div>
+  </div>
+
+  <!-- Desktop Environment (Hidden during boot) -->
+  <div id="desktop" class="desktop hidden">
+    <!-- Desktop Icons Grid -->
+    <div id="desktop-grid" class="desktop-grid">
+      
+      <div class="desktop-icon" data-app="about" tabindex="0" role="button" aria-label="About Me">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="24" height="24" rx="1" />
+            <circle cx="16" cy="13" r="5" />
+            <path d="M7 26c0-5 4-8 9-8s9 3 9 8" />
+          </svg>
+        </div>
+        <span class="icon-label">About Me</span>
+      </div>
+
+      <div class="desktop-icon" data-app="projects" tabindex="0" role="button" aria-label="Projects">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 8h8l3 3h13v15H4Z" fill="currentColor" fill-opacity="0.1" />
+            <path d="M4 8h8l3 3h13v15H4Z" />
+            <line x1="4" y1="12" x2="28" y2="12" />
+          </svg>
+        </div>
+        <span class="icon-label">Projects</span>
+      </div>
+
+      <div class="desktop-icon" data-app="creative" tabindex="0" role="button" aria-label="Creative Studio">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="24" height="24" />
+            <circle cx="16" cy="16" r="6" />
+            <circle cx="23" cy="9" r="2" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="icon-label">@nazrithm</span>
+      </div>
+
+      <div class="desktop-icon" data-app="skills" tabindex="0" role="button" aria-label="Skills">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="4" width="22" height="24" />
+            <line x1="9" y1="9" x2="23" y2="9" />
+            <line x1="9" y1="14" x2="23" y2="14" />
+            <line x1="9" y1="19" x2="19" y2="19" />
+            <line x1="9" y1="24" x2="15" y2="24" />
+          </svg>
+        </div>
+        <span class="icon-label">Skills</span>
+      </div>
+
+      <div class="desktop-icon" data-app="experience" tabindex="0" role="button" aria-label="Timeline">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="24" height="24" />
+            <path d="M8 11l4 4-4 4" />
+            <line x1="14" y1="19" x2="22" y2="19" />
+          </svg>
+        </div>
+        <span class="icon-label">Timeline</span>
+      </div>
+
+      <div class="desktop-icon" data-app="certs" tabindex="0" role="button" aria-label="Certifications">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="16" cy="12" r="7" />
+            <path d="M12 18l-3 10 7-4 7 4-3-10" />
+          </svg>
+        </div>
+        <span class="icon-label">Certs.exe</span>
+      </div>
+
+      <div class="desktop-icon" data-app="contact" tabindex="0" role="button" aria-label="Contact">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="7" width="24" height="18" />
+            <path d="M4 7l12 10L28 7" />
+          </svg>
+        </div>
+        <span class="icon-label">Contact</span>
+      </div>
+
+      <div class="desktop-icon" data-app="resume" tabindex="0" role="button" aria-label="Resume.pdf">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 4h14l6 6v18H6Z" />
+            <path d="M20 4v6h6" />
+            <text x="9" y="21" font-size="8" font-weight="bold" fill="currentColor" stroke="none" font-family="VT323, monospace">PDF</text>
+          </svg>
+        </div>
+        <span class="icon-label">Resume.pdf</span>
+      </div>
+
+      <div class="desktop-icon" data-app="snake" tabindex="0" role="button" aria-label="Snake Game">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 22h8v-8h8v-8h8" stroke-linecap="square" />
+            <circle cx="28" cy="6" r="2" fill="currentColor" />
+            <rect x="2" y="20" width="4" height="4" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="icon-label">Snake.exe</span>
+      </div>
+
+      <div class="desktop-icon" data-app="game" tabindex="0" role="button" aria-label="Dodge & Catch">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="8" width="24" height="16" rx="2" />
+            <line x1="9" y1="16" x2="15" y2="16" />
+            <line x1="12" y1="13" x2="12" y2="19" />
+            <circle cx="21" cy="14" r="1.5" fill="currentColor" />
+            <circle cx="24" cy="17" r="1.5" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="icon-label">Dodge.exe</span>
+      </div>
+
+      <div class="desktop-icon" data-app="recycle" tabindex="0" role="button" aria-label="Recycle Bin">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 8h16v18H8Z" />
+            <line x1="6" y1="8" x2="26" y2="8" />
+            <path d="M12 8V5h8v3" />
+            <line x1="12" y1="12" x2="12" y2="22" />
+            <line x1="16" y1="12" x2="16" y2="22" />
+            <line x1="20" y1="12" x2="20" y2="22" />
+          </svg>
+        </div>
+        <span class="icon-label">Recycle Bin</span>
+      </div>
+    </div>
+
+    <!-- Active Windows Layer -->
+    <div id="windows-container" class="windows-container"></div>
+
+    <!-- Right-Click Context Menu -->
+    <div id="context-menu" class="context-menu hidden">
+      <div class="context-menu-item" data-action="arrange">Arrange Icons</div>
+      <div class="context-menu-item" data-action="refresh">Refresh Desktop</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="toggle-crt">Toggle CRT Scanlines</div>
+      <div class="context-menu-item" data-action="toggle-audio">Toggle Audio Effects</div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" data-action="sys-info">System Properties...</div>
+    </div>
+  </div>
+
+  <!-- Taskbar Layer -->
+  <div id="taskbar" class="taskbar">
+    <!-- Start Button -->
+    <button id="start-button" class="start-button outset" aria-expanded="false" aria-controls="start-menu">
+      <svg class="start-logo" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <rect x="1" y="1" width="6" height="6" />
+        <rect x="9" y="1" width="6" height="6" />
+        <rect x="1" y="9" width="6" height="6" />
+        <rect x="9" y="9" width="6" height="6" />
+      </svg>
+      <span class="start-text">Start</span>
+    </button>
+
+    <!-- Start Menu Popup -->
+    <div id="start-menu" class="start-menu outset-heavy hidden">
+      <div class="start-menu-sidebar">
+        <span class="sidebar-text">VEER PRATAP SINGH</span>
+      </div>
+      <div class="start-menu-items">
+        <div class="start-item" data-app="about">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="24" height="24"/><circle cx="16" cy="13" r="5"/><path d="M7 26c0-5 4-8 9-8s9 3 9 8"/></svg>
+          <span>About Veer Singh</span>
+        </div>
+        <div class="start-item" data-app="projects">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h8l3 3h13v15H4Z"/></svg>
+          <span>Projects Explorer</span>
+        </div>
+        <div class="start-item" data-app="creative">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="24" height="24"/><circle cx="16" cy="16" r="6"/></svg>
+          <span>Creative Studio (@nazrithm)</span>
+        </div>
+        <div class="start-item" data-app="skills">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="22" height="24"/><line x1="9" y1="9" x2="23" y2="9"/><line x1="9" y1="14" x2="23" y2="14"/></svg>
+          <span>System Properties (Skills)</span>
+        </div>
+        <div class="start-item" data-app="experience">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="24" height="24"/><path d="M8 11l4 4-4 4"/></svg>
+          <span>Timeline &amp; Journey</span>
+        </div>
+        <div class="start-item" data-app="certs">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="12" r="7"/><path d="M12 18l-3 10 7-4 7 4-3-10"/></svg>
+          <span>Certifications</span>
+        </div>
+        <div class="start-item" data-app="contact">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="24" height="18"/><path d="M4 7l12 10L28 7"/></svg>
+          <span>Send Message (Mail)</span>
+        </div>
+        <div class="start-item" data-app="resume">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h14l6 6v18H6Z"/><path d="M20 4v6h6"/></svg>
+          <span>View Resume (PDF)</span>
+        </div>
+        <div class="start-item" data-app="snake">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h8v-8h8v-8h8"/><circle cx="28" cy="6" r="2" fill="currentColor"/></svg>
+          <span>Snake Game (Classic)</span>
+        </div>
+        <div class="start-item" data-app="game">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="24" height="16" rx="2"/><circle cx="21" cy="14" r="1.5" fill="currentColor"/></svg>
+          <span>Dodge &amp; Catch Game</span>
+        </div>
+        <div class="start-menu-divider"></div>
+        <div class="start-item" id="sound-toggle-item">
+          <span class="start-item-icon">🔊</span>
+          <span id="sound-toggle-label">Audio: OFF</span>
+        </div>
+        <div class="start-menu-divider"></div>
+        <div class="start-item" id="shutdown-item">
+          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="10"/><line x1="16" y1="6" x2="16" y2="16"/></svg>
+          <span>Shut Down...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Window Task Buttons Container -->
+    <div id="taskbar-tasks" class="taskbar-tasks"></div>
+
+    <!-- System Tray / Clock -->
+    <div class="system-tray inset">
+      <button id="tray-sound-btn" class="tray-btn" title="Toggle UI Audio">🔇</button>
+      <span id="system-clock" class="system-clock">00:00:00 AM</span>
+    </div>
+  </div>
+
+  <!-- Shutdown Overlay Screen -->
+  <div id="shutdown-screen" class="shutdown-screen hidden">
+    <div class="shutdown-message">
+      <p class="shutdown-title">It is now safe to turn off your computer.</p>
+      <p class="shutdown-sub">[ Click anywhere or press any key to reboot ]</p>
+    </div>
+  </div>
+
+  <!-- Reusable Window Template -->
+  <template id="window-template">
+    <div class="window outset" tabindex="-1">
+      <div class="window-header">
+        <div class="window-title">
+          <span class="window-title-icon"></span>
+          <span class="window-title-text">Window</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn win-btn-minimize" title="Minimize" aria-label="Minimize">─</button>
+          <button class="win-btn win-btn-maximize" title="Maximize" aria-label="Maximize">□</button>
+          <button class="win-btn win-btn-close" title="Close" aria-label="Close">✕</button>
+        </div>
+      </div>
+      <div class="window-menu-bar">
+        <span class="menu-label">File</span>
+        <span class="menu-label">Edit</span>
+        <span class="menu-label">View</span>
+        <span class="menu-label">Help</span>
+      </div>
+      <div class="window-body inset">
+        <!-- Content injected dynamically -->
+      </div>
+      <div class="window-status-bar inset">
+        <span class="status-text">Ready</span>
+        <div class="window-resize-handle" title="Resize"></div>
+      </div>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
