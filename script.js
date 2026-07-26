@@ -17,7 +17,7 @@ const PORTFOLIO_CONFIG = {
   linkedinUrl: "https://linkedin.com/in/veer-pratap-singh-77702b316",
   instagramPersonal: "https://instagram.com/ivee.rrr",
   instagramStudio: "https://instagram.com/nazrithm",
-  resumeLink: "Veer_Pratap_Singh_Resume.pdf"
+  resumeLink: "resume.pdf"
 };
 
 const BIO_DATA = {
@@ -27,9 +27,9 @@ My work spans from developing intelligent AI systems to crafting premium brand i
 
 Beyond development, I'm building @nazrithm — a Creative Studio focused on design, reels, and brand strategy. Because real impact comes from building brands, not just shipping code.`,
   asciiArt: `
-   /\\_/\\
-  ( o.o )  < Code. Click. Create.
-   > ^ <   Founder @nazrithm
+/\_/\
+( o.o) 
+> ^ < 
   `,
   quickFacts: [
     { label: "DEGREE", value: "B.Tech Computer Science (2022-2028)" },
@@ -145,8 +145,9 @@ const PROJECTS_DATA = [
 const SKILLS_DATA = {
   Programming: [
     { name: "C / C++", level: 90 },
-    { name: "Python", level: 88 },
-    { name: "Java", level: 80 }
+    { name: "Java", level: 80 },
+    { name: "Python", level: 40 }
+
   ],
   Frontend: [
     { name: "HTML5 / CSS3", level: 95 },
@@ -172,35 +173,35 @@ const SKILLS_DATA = {
 
 const EXP_DATA = [
   {
-    date: "2024",
+    date: "2026",
     role: "4th Place Winner",
     company: "HackNexus 2.0 Hackathon",
     desc: "Built AI Triage Pro — a multimodal emergency triage system combining audio (Whisper/Librosa) and vision AI (CLIP) for real-time severity detection and ambulance dispatch recommendation.",
     tech: "AI/ML, Python, Flask, Whisper, CLIP"
   },
   {
-    date: "2024",
+    date: "2025",
     role: "Web Development Intern",
     company: "CodSoft",
     desc: "Built production-ready web projects including interactive calculator, task manager apps, and logic games using HTML, CSS, and JavaScript.",
     tech: "HTML, CSS, JavaScript"
   },
   {
-    date: "2024",
+    date: "2025",
     role: "C++ Programming Intern",
     company: "CodeAlpha",
     desc: "Worked on C++ programming challenges, strengthening core fundamentals, data structures, and object-oriented programming.",
     tech: "C++, Data Structures, OOP"
   },
   {
-    date: "2024",
+    date: "2025",
     role: "Virtual Tech Intern",
     company: "Deloitte / Forage",
     desc: "Completed a virtual technical internship program simulating real-world technology consulting and software engineering challenges.",
     tech: "Software Eng, Tech Consulting"
   },
   {
-    date: "2022 — Present",
+    date: "2024 — Present",
     role: "B.Tech Computer Science Student",
     company: "Arya College of Engineering · RTU",
     desc: "Pursuing B.Tech CSE with deep focus on programming, AI systems, web development, and creative technology. Graduating 2028.",
@@ -951,6 +952,7 @@ function buildAboutContent() {
     <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
       <a href="${PORTFOLIO_CONFIG.githubUrl}" target="_blank"><button>💻 GitHub Profile</button></a>
       <a href="${PORTFOLIO_CONFIG.linkedinUrl}" target="_blank"><button>🔗 LinkedIn Profile</button></a>
+      <a href="${PORTFOLIO_CONFIG.resumeLink}" download="Veer_Pratap_Singh_Resume.pdf"><button>📄 Download Resume (PDF)</button></a>
       <a href="${PORTFOLIO_CONFIG.instagramStudio}" target="_blank"><button>🎨 @nazrithm Studio</button></a>
     </div>
   `;
@@ -1213,7 +1215,7 @@ function buildResumeContent() {
   return `
     <div class="pdf-preview-bar outset">
       <span style="font-family:var(--font-retro); font-size:16px;">FILE: VEER_PRATAP_SINGH_RESUME.PDF</span>
-      <a href="${PORTFOLIO_CONFIG.resumeLink}" target="_blank" download style="text-decoration:none;">
+      <a href="resume.pdf" download="Veer_Pratap_Singh_Resume.pdf" style="text-decoration:none;">
         <button>📥 Download PDF</button>
       </a>
     </div>
@@ -1231,8 +1233,8 @@ function buildResumeContent() {
 
       <h2 style="border-bottom:1px solid #000; padding-bottom:2px; font-size:14px; margin-top:14px;">SELECTED HONORS & PROJECTS</h2>
       <p><strong>AI Triage Pro</strong> — 4th Place Winner @ HackNexus 2.0 Hackathon (2024)</p>
-      <p><strong>Web Development Intern</strong> — CodSoft (2024)</p>
-      <p><strong>C++ Programming Intern</strong> — CodeAlpha (2024)</p>
+      <p><strong>Web Development Intern</strong> — CodSoft (2025)</p>
+      <p><strong>C++ Programming Intern</strong> — CodeAlpha (2025)</p>
     </div>
   `;
 }
