@@ -27,11 +27,7 @@ const BIO_DATA = {
 My work spans from developing intelligent AI systems to crafting premium brand identities. I believe the best digital products are engineered with precision and designed with soul.
 
 Beyond development, I'm building @nazrithm — a Creative Studio focused on design, reels, and brand strategy. Because real impact comes from building brands, not just shipping code.`,
-  asciiArt: `
-   /\\_/\\
-  ( o.o )  < Code. Click. Create.
-   > ^ <   Founder @nazrithm
-  `,
+  asciiArt: ` /\\_/\\ \n( o.o )\n > ^ < `,
   quickFacts: [
     { label: "DEGREE", value: "B.Tech Computer Science (2022-2028)" },
     { label: "COLLEGE", value: "Arya College of Engineering, Jaipur" },
@@ -924,7 +920,7 @@ function openAppWindow(appId) {
   }
 }
 
-// 1. About Me Window Content
+// 1. About Me Window Content (Clean aligned ASCII avatar & details)
 function buildAboutContent() {
   const specs = BIO_DATA.quickFacts.map(fact => 
     `<li><span class="label">${fact.label}:</span> ${fact.value}</li>`
@@ -934,12 +930,12 @@ function buildAboutContent() {
     <div class="bio-container">
       <div class="ascii-avatar-box inset">
         <pre>${BIO_DATA.asciiArt}</pre>
-        <span style="font-size:10px; margin-top:4px; color:#aaa;">[VEER_AVATAR.BMP]</span>
+        <span style="font-size:10px; margin-top:6px; color:#aaa; font-family:var(--font-retro);">[AVATAR.BMP]</span>
       </div>
       <div class="bio-details">
         <h1>${PORTFOLIO_CONFIG.developerName}</h1>
         <h2 style="font-size:14px; color:#aaaaaa; margin-top:2px;">${PORTFOLIO_CONFIG.developerTitle}</h2>
-        <p style="font-family:var(--font-retro); font-size:15px; color:#fff; margin-top:4px;">"${PORTFOLIO_CONFIG.tagline}"</p>
+        <p style="font-family:var(--font-retro); font-size:16px; color:#fff; margin-top:4px;">"${PORTFOLIO_CONFIG.tagline}"</p>
         <ul class="quick-specs-list" style="margin-top:8px;">
           ${specs}
         </ul>
@@ -1267,9 +1263,9 @@ function startSnakeGame() {
 
   if (snakeGameInterval) clearInterval(snakeGameInterval);
 
-  const gridSize = 20; // 20px grid
-  const cols = canvas.width / gridSize; // 25 columns
-  const rows = canvas.height / gridSize; // 17 rows
+  const gridSize = 20;
+  const cols = canvas.width / gridSize;
+  const rows = canvas.height / gridSize;
 
   let score = 0;
   let highScore = localStorage.getItem('snake_highscore') || 0;
@@ -1277,17 +1273,15 @@ function startSnakeGame() {
   const scoreElem = document.getElementById('snake-score');
   if (highElem) highElem.textContent = highScore;
 
-  // Initial Snake body: array of segments {x, y}
   let snake = [
     { x: 10, y: 8 },
     { x: 9, y: 8 },
     { x: 8, y: 8 }
   ];
 
-  let dir = { x: 1, y: 0 }; // Moving right
-  let nextDir = { x: 1, y: 0 }; // Buffer next direction to prevent rapid self-collision
+  let dir = { x: 1, y: 0 };
+  let nextDir = { x: 1, y: 0 };
 
-  // Generate food position
   function spawnFood() {
     let valid = false;
     let foodPos = { x: 0, y: 0 };
@@ -1301,7 +1295,6 @@ function startSnakeGame() {
 
   let food = spawnFood();
 
-  // Keyboard Control Listener
   const handleKey = (e) => {
     const key = e.key;
     if ((key === 'ArrowUp' || key === 'w' || key === 'W') && dir.y !== 1) {
@@ -1318,14 +1311,11 @@ function startSnakeGame() {
   window.removeEventListener('keydown', handleKey);
   window.addEventListener('keydown', handleKey);
 
-  // Main Snake Game Loop
   snakeGameInterval = setInterval(() => {
     dir = nextDir;
 
-    // Calculate new head position
     const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
-    // Check Wall Collision
     if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
       audioEngine.playError();
       clearInterval(snakeGameInterval);
@@ -1333,7 +1323,6 @@ function startSnakeGame() {
       return;
     }
 
-    // Check Self-Collision
     if (snake.some(seg => seg.x === head.x && seg.y === head.y)) {
       audioEngine.playError();
       clearInterval(snakeGameInterval);
@@ -1341,10 +1330,8 @@ function startSnakeGame() {
       return;
     }
 
-    // Add new head segment to front
     snake.unshift(head);
 
-    // Check if food eaten
     if (head.x === food.x && head.y === food.y) {
       score += 10;
       audioEngine.playBeep(1000, 'square', 0.06, 0.05);
@@ -1356,18 +1343,14 @@ function startSnakeGame() {
         if (highElem) highElem.textContent = highScore;
       }
 
-      // Spawn new food (Snake grows because we DON'T pop tail!)
       food = spawnFood();
     } else {
-      // Normal move: remove tail segment
       snake.pop();
     }
 
-    // Render Frame
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Subtle Retro Grid Lines
     ctx.strokeStyle = "#111111";
     ctx.lineWidth = 1;
     for (let c = 0; c < cols; c++) {
@@ -1383,25 +1366,20 @@ function startSnakeGame() {
       ctx.stroke();
     }
 
-    // Draw Food (Pixel block with cross)
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 4, gridSize - 4);
     ctx.fillStyle = "#000000";
     ctx.font = "12px monospace";
     ctx.fillText("★", food.x * gridSize + 4, food.y * gridSize + 14);
 
-    // Draw Snake Segments (Head is distinct, body segments outlined)
     snake.forEach((segment, index) => {
       if (index === 0) {
-        // Snake Head
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
         ctx.fillStyle = "#000000";
-        // Eye pixels
         ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, 3, 3);
         ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, 3, 3);
       } else {
-        // Body Segments
         ctx.fillStyle = "#e5e5e5";
         ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
         ctx.strokeStyle = "#000000";
@@ -1409,7 +1387,7 @@ function startSnakeGame() {
       }
     });
 
-  }, 120); // Speed step
+  }, 120);
 }
 
 function drawGameOver(ctx, canvas, msg) {
@@ -1424,7 +1402,7 @@ function drawGameOver(ctx, canvas, msg) {
   ctx.textAlign = "left";
 }
 
-// 10. Dodge Game (Existing Mini Game)
+// 10. Dodge Game
 function buildGameContent() {
   return `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:var(--font-retro); font-size:16px;">
