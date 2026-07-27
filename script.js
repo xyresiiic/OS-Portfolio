@@ -421,6 +421,10 @@ class WindowManager {
       initialWidth = Math.min(580, desktopWidth - 30);
       initialHeight = 480;
     }
+    if (appId === 'calc') {
+      initialWidth = Math.min(360, desktopWidth - 30);
+      initialHeight = 440;
+    }
 
     const left = Math.max(15, Math.min(50 + (this.offsetCount * 22), desktopWidth - initialWidth - 15));
     const top = Math.max(15, Math.min(35 + (this.offsetCount * 22), desktopHeight - initialHeight - 50));
@@ -1814,89 +1818,260 @@ window.clearNotepadArea = function () {
   }
 };
 
-// 13. Scientific Calculator Accessory Content & Engine
-let calcDisplayVal = "0";
-let calcPrevVal = null;
-let calcOp = null;
+// 13. Scientific Calculator Accessory Content & Advanced Engine
+let calcCurrentVal = "0";
+let calcAccumulator = null;
+let calcPendingOp = null;
+let calcFormulaHistory = "";
+let calcMemory = 0;
+let calcShouldResetDisplay = false;
+let calcLastOp = null;
+let calcLastOperand = null;
 
 function buildCalcContent() {
-  calcDisplayVal = "0";
-  calcPrevVal = null;
-  calcOp = null;
+  calcCurrentVal = "0";
+  calcAccumulator = null;
+  calcPendingOp = null;
+  calcFormulaHistory = "";
+  calcShouldResetDisplay = false;
+  calcLastOp = null;
+  calcLastOperand = null;
+
+  setTimeout(() => initCalcKeyboardListener(), 100);
+
   return `
     <div class="calc-container">
-      <div class="calc-display inset" id="calc-display">0</div>
+      <div class="calc-screen-box inset">
+        <div id="calc-expression" class="calc-expression"></div>
+        <div class="calc-display-row">
+          <span id="calc-memory-indicator" class="calc-memory-indicator">${calcMemory !== 0 ? '[M]' : ''}</span>
+          <div id="calc-display" class="calc-display">0</div>
+        </div>
+      </div>
+
       <div class="calc-grid">
-        <button class="calc-btn" onclick="pressCalc('C')">C</button>
-        <button class="calc-btn" onclick="pressCalc('CE')">CE</button>
-        <button class="calc-btn" onclick="pressCalc('+/-')">±</button>
-        <button class="calc-btn" onclick="pressCalc('/')">÷</button>
-        
+        <!-- Row 1: Memory & Backspace -->
+        <button class="calc-btn btn-memory" onclick="pressCalc('MC')" title="Memory Clear">MC</button>
+        <button class="calc-btn btn-memory" onclick="pressCalc('MR')" title="Memory Recall">MR</button>
+        <button class="calc-btn btn-memory" onclick="pressCalc('MS')" title="Memory Store">MS</button>
+        <button class="calc-btn btn-memory" onclick="pressCalc('M+')" title="Memory Add">M+</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('BACK')" title="Backspace">⌫</button>
+
+        <!-- Row 2: Scientific & Clear -->
+        <button class="calc-btn btn-operator" onclick="pressCalc('sqr')">x²</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('sqrt')">√</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('recip')">1/x</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('pct')">%</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('C')" style="color:#ff6666;">C</button>
+
+        <!-- Row 3: Utility & Ops -->
+        <button class="calc-btn btn-operator" onclick="pressCalc('CE')">CE</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('+/-')">±</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('/')">÷</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('*')">×</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('-')">-</button>
+
+        <!-- Row 4: Digits 7,8,9, + -->
         <button class="calc-btn" onclick="pressCalc('7')">7</button>
         <button class="calc-btn" onclick="pressCalc('8')">8</button>
         <button class="calc-btn" onclick="pressCalc('9')">9</button>
-        <button class="calc-btn" onclick="pressCalc('*')">×</button>
+        <button class="calc-btn btn-operator" onclick="pressCalc('+')">+</button>
+        <button class="calc-btn btn-equals" onclick="pressCalc('=')" style="grid-row: span 3; height: 100%;">=</button>
 
+        <!-- Row 5: Digits 4,5,6 -->
         <button class="calc-btn" onclick="pressCalc('4')">4</button>
         <button class="calc-btn" onclick="pressCalc('5')">5</button>
         <button class="calc-btn" onclick="pressCalc('6')">6</button>
-        <button class="calc-btn" onclick="pressCalc('-')">-</button>
+        <button class="calc-btn" onclick="pressCalc('00')">00</button>
 
+        <!-- Row 6: Digits 1,2,3, 0, . -->
         <button class="calc-btn" onclick="pressCalc('1')">1</button>
         <button class="calc-btn" onclick="pressCalc('2')">2</button>
         <button class="calc-btn" onclick="pressCalc('3')">3</button>
-        <button class="calc-btn" onclick="pressCalc('+')">+</button>
-
         <button class="calc-btn" onclick="pressCalc('0')">0</button>
         <button class="calc-btn" onclick="pressCalc('.')">.</button>
-        <button class="calc-btn" onclick="pressCalc('sqrt')">√</button>
-        <button class="calc-btn" style="background:#ffffff; color:#000; font-weight:bold;" onclick="pressCalc('=')">=</button>
       </div>
     </div>
   `;
 }
 
+function formatCalcNum(n) {
+  if (isNaN(n) || !isFinite(n)) return "Error";
+  let str = String(n);
+  if (str.length > 14) {
+    if (Math.abs(n) >= 1e14 || (Math.abs(n) < 1e-6 && n !== 0)) {
+      return n.toExponential(6);
+    }
+    return String(parseFloat(n.toFixed(8)));
+  }
+  return str;
+}
+
+function getOpSymbol(op) {
+  if (op === '+') return '+';
+  if (op === '-') return '-';
+  if (op === '*') return '×';
+  if (op === '/') return '÷';
+  return op;
+}
+
+function evaluateCalcOp(a, op, b) {
+  if (op === '+') return a + b;
+  if (op === '-') return a - b;
+  if (op === '*') return a * b;
+  if (op === '/') return b !== 0 ? a / b : NaN;
+  return b;
+}
+
 window.pressCalc = function (btn) {
   audioEngine.playClick();
   const display = document.getElementById('calc-display');
+  const exprDisplay = document.getElementById('calc-expression');
+  const memDisplay = document.getElementById('calc-memory-indicator');
   if (!display) return;
 
-  if (!isNaN(btn)) {
-    if (calcDisplayVal === "0" || calcDisplayVal === "Error") calcDisplayVal = btn;
-    else calcDisplayVal += btn;
-  } else if (btn === '.') {
-    if (!calcDisplayVal.includes('.')) calcDisplayVal += '.';
-  } else if (btn === 'C') {
-    calcDisplayVal = "0";
-    calcPrevVal = null;
-    calcOp = null;
-  } else if (btn === 'CE') {
-    calcDisplayVal = "0";
-  } else if (btn === '+/-') {
-    calcDisplayVal = String(parseFloat(calcDisplayVal) * -1);
-  } else if (btn === 'sqrt') {
-    const v = parseFloat(calcDisplayVal);
-    calcDisplayVal = v >= 0 ? String(Math.sqrt(v)) : "Error";
-  } else if (['+', '-', '*', '/'].includes(btn)) {
-    calcPrevVal = parseFloat(calcDisplayVal);
-    calcOp = btn;
-    calcDisplayVal = "0";
-  } else if (btn === '=') {
-    if (calcOp && calcPrevVal !== null) {
-      const current = parseFloat(calcDisplayVal);
-      let res = 0;
-      if (calcOp === '+') res = calcPrevVal + current;
-      if (calcOp === '-') res = calcPrevVal - current;
-      if (calcOp === '*') res = calcPrevVal * current;
-      if (calcOp === '/') res = current !== 0 ? calcPrevVal / current : "Error";
-      calcDisplayVal = String(res);
-      calcPrevVal = null;
-      calcOp = null;
+  // Handle Digits
+  if (!isNaN(btn) || btn === '00') {
+    if (calcShouldResetDisplay || calcCurrentVal === "0" || calcCurrentVal === "Error") {
+      calcCurrentVal = (btn === '00') ? "0" : btn;
+      calcShouldResetDisplay = false;
+    } else {
+      if (calcCurrentVal.replace('.', '').replace('-', '').length < 15) {
+        calcCurrentVal += btn;
+      }
     }
   }
+  // Decimal
+  else if (btn === '.') {
+    if (calcShouldResetDisplay || calcCurrentVal === "Error") {
+      calcCurrentVal = "0.";
+      calcShouldResetDisplay = false;
+    } else if (!calcCurrentVal.includes('.')) {
+      calcCurrentVal += '.';
+    }
+  }
+  // Backspace
+  else if (btn === 'BACK') {
+    if (!calcShouldResetDisplay && calcCurrentVal !== "Error" && calcCurrentVal !== "0") {
+      calcCurrentVal = calcCurrentVal.slice(0, -1);
+      if (calcCurrentVal === "" || calcCurrentVal === "-") calcCurrentVal = "0";
+    }
+  }
+  // Clear All
+  else if (btn === 'C') {
+    calcCurrentVal = "0";
+    calcAccumulator = null;
+    calcPendingOp = null;
+    calcFormulaHistory = "";
+    calcLastOp = null;
+    calcLastOperand = null;
+    calcShouldResetDisplay = false;
+  }
+  // Clear Entry
+  else if (btn === 'CE') {
+    calcCurrentVal = "0";
+  }
+  // Plus / Minus Toggle
+  else if (btn === '+/-') {
+    if (calcCurrentVal !== "0" && calcCurrentVal !== "Error") {
+      calcCurrentVal = String(parseFloat(calcCurrentVal) * -1);
+    }
+  }
+  // Instant Scientific Functions
+  else if (['sqrt', 'sqr', 'recip', 'pct'].includes(btn)) {
+    let v = parseFloat(calcCurrentVal);
+    if (btn === 'sqrt') v = v >= 0 ? Math.sqrt(v) : NaN;
+    if (btn === 'sqr') v = v * v;
+    if (btn === 'recip') v = v !== 0 ? 1 / v : NaN;
+    if (btn === 'pct') {
+      v = (calcAccumulator !== null) ? calcAccumulator * (v / 100) : v / 100;
+    }
+    calcCurrentVal = formatCalcNum(v);
+    calcShouldResetDisplay = true;
+  }
+  // Operators (+, -, *, /)
+  else if (['+', '-', '*', '/'].includes(btn)) {
+    const currentNum = parseFloat(calcCurrentVal);
 
-  display.textContent = calcDisplayVal;
+    if (calcAccumulator === null) {
+      calcAccumulator = currentNum;
+    } else if (!calcShouldResetDisplay && calcPendingOp) {
+      const res = evaluateCalcOp(calcAccumulator, calcPendingOp, currentNum);
+      calcAccumulator = isNaN(res) ? null : res;
+      calcCurrentVal = formatCalcNum(res);
+    }
+
+    calcPendingOp = btn;
+    calcFormulaHistory = (calcAccumulator !== null ? formatCalcNum(calcAccumulator) : currentNum) + ` ${getOpSymbol(btn)}`;
+    calcShouldResetDisplay = true;
+  }
+  // Equals (=)
+  else if (btn === '=') {
+    const currentNum = parseFloat(calcCurrentVal);
+
+    if (calcPendingOp && calcAccumulator !== null) {
+      calcLastOp = calcPendingOp;
+      calcLastOperand = currentNum;
+      const res = evaluateCalcOp(calcAccumulator, calcPendingOp, currentNum);
+
+      if (isNaN(res) || !isFinite(res)) {
+        calcCurrentVal = "Error";
+        calcFormulaHistory = `${formatCalcNum(calcAccumulator)} ${getOpSymbol(calcPendingOp)} ${formatCalcNum(currentNum)} =`;
+      } else {
+        calcCurrentVal = formatCalcNum(res);
+        calcFormulaHistory = `${formatCalcNum(calcAccumulator)} ${getOpSymbol(calcPendingOp)} ${formatCalcNum(currentNum)} =`;
+      }
+
+      calcAccumulator = null;
+      calcPendingOp = null;
+      calcShouldResetDisplay = true;
+    } else if (calcLastOp && calcLastOperand !== null) {
+      const res = evaluateCalcOp(currentNum, calcLastOp, calcLastOperand);
+      calcCurrentVal = formatCalcNum(res);
+      calcFormulaHistory = `${formatCalcNum(currentNum)} ${getOpSymbol(calcLastOp)} ${formatCalcNum(calcLastOperand)} =`;
+      calcShouldResetDisplay = true;
+    }
+  }
+  // Memory Operations
+  else if (btn === 'MS') {
+    calcMemory = parseFloat(calcCurrentVal) || 0;
+    calcShouldResetDisplay = true;
+  } else if (btn === 'MR') {
+    calcCurrentVal = formatCalcNum(calcMemory);
+    calcShouldResetDisplay = true;
+  } else if (btn === 'MC') {
+    calcMemory = 0;
+  } else if (btn === 'M+') {
+    calcMemory += parseFloat(calcCurrentVal) || 0;
+    calcShouldResetDisplay = true;
+  }
+
+  // Update DOM Display Elements
+  display.textContent = calcCurrentVal;
+  if (exprDisplay) exprDisplay.textContent = calcFormulaHistory;
+  if (memDisplay) memDisplay.textContent = (calcMemory !== 0) ? '[M]' : '';
 };
+
+function initCalcKeyboardListener() {
+  const handleKey = (e) => {
+    const calcWin = document.querySelector('.window[data-app-id="calc"].active');
+    if (!calcWin) return;
+
+    const key = e.key;
+    if (!isNaN(key)) pressCalc(key);
+    if (key === '.') pressCalc('.');
+    if (key === '+') pressCalc('+');
+    if (key === '-') pressCalc('-');
+    if (key === '*') pressCalc('*');
+    if (key === '/') { e.preventDefault(); pressCalc('/'); }
+    if (key === 'Enter' || key === '=') { e.preventDefault(); pressCalc('='); }
+    if (key === 'Backspace') { e.preventDefault(); pressCalc('BACK'); }
+    if (key === 'Escape') pressCalc('C');
+  };
+
+  window.removeEventListener('keydown', handleKey);
+  window.addEventListener('keydown', handleKey);
+}
 
 // 14. Retro Paint Accessory Content & HTML5 Canvas Studio
 let paintCtx = null;

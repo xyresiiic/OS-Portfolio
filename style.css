@@ -1141,18 +1141,48 @@ p {
 .calc-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 300px;
+  gap: 8px;
+  max-width: 340px;
   margin: 0 auto;
-  padding: 6px;
+  padding: 4px;
+}
+
+.calc-screen-box {
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  padding: 6px 10px;
+}
+
+.calc-expression {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: #888888;
+  text-align: right;
+  min-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calc-display-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calc-memory-indicator {
+  font-family: var(--font-retro);
+  font-size: 14px;
+  color: #ffff00;
+  width: 24px;
 }
 
 .calc-display {
+  flex: 1;
   font-family: 'VT323', monospace;
-  font-size: 32px;
+  font-size: 34px;
   text-align: right;
-  padding: 6px 12px;
-  background: #000000;
   color: #ffffff;
   letter-spacing: 2px;
   overflow: hidden;
@@ -1162,17 +1192,34 @@ p {
 
 .calc-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
 }
 
 .calc-btn {
   font-family: var(--font-retro);
-  font-size: 18px;
-  height: 38px;
+  font-size: 16px;
+  height: 36px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.calc-btn.btn-operator {
+  color: #ffffff;
+  background: #1e1e1e;
+}
+
+.calc-btn.btn-equals {
+  background: #ffffff;
+  color: #000000;
+  font-weight: bold;
+}
+
+.calc-btn.btn-memory {
+  font-size: 14px;
+  color: #aaaaaa;
 }
 
 /* Paint Accessory Styling */
