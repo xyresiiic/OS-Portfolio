@@ -1020,3 +1020,311 @@ p {
     font-size: 16px;
   }
 }
+
+/* ==========================================================================
+   AUTHENTIC RETRO OS ENHANCEMENTS (Selection Marquee, Submenus, Accessories)
+   ========================================================================== */
+
+/* Rubber-band Marquee Selection Box */
+.selection-box {
+  position: absolute;
+  border: 1px dashed #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Desktop Icon Absolute Positioning Support for Free Dragging */
+.desktop-icon.dragging {
+  opacity: 0.8;
+  z-index: 100;
+}
+
+/* Start Menu Submenus Flyout */
+.has-submenu {
+  position: relative;
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  font-size: 10px;
+}
+
+.start-submenu {
+  position: absolute;
+  left: 100%;
+  top: -4px;
+  width: 220px;
+  background-color: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  z-index: 2100;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.has-submenu:hover > .start-submenu {
+  display: flex !important;
+}
+
+.submenu-header {
+  font-family: var(--font-retro);
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 4px 6px 2px 6px;
+  letter-spacing: 1px;
+}
+
+/* Desktop Wallpaper Patterns */
+.desktop.pattern-dots {
+  background-image: radial-gradient(#333333 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.desktop.pattern-matrix {
+  background-color: #000500;
+  background-image: repeating-linear-gradient(0deg, rgba(0,255,0,0.04) 0px, rgba(0,255,0,0.04) 1px, transparent 1px, transparent 4px), radial-gradient(#004400 1px, transparent 1px);
+  background-size: 100% 4px, 12px 12px;
+}
+
+.desktop.pattern-starfield {
+  background-color: #000000;
+  background-image: radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(#888888 1px, transparent 1px);
+  background-size: 32px 32px, 64px 64px;
+  background-position: 0 0, 16px 16px;
+}
+
+.desktop.pattern-checker {
+  background-color: #0a0a0a;
+  background-image: conic-gradient(#181818 90deg, #090909 90deg 180deg, #181818 180deg 270deg, #090909 270deg);
+  background-size: 16px 16px;
+}
+
+.desktop.pattern-solid {
+  background-color: #121212;
+  background-image: none;
+}
+
+/* Notepad Accessory Styling */
+.notepad-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.notepad-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 4px 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-dark);
+  font-family: var(--font-retro);
+  font-size: 14px;
+}
+
+.notepad-textarea {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  background: #000000;
+  color: #ffffff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  padding: 8px;
+  border: none;
+  outline: none;
+  line-height: 1.4;
+}
+
+/* Calculator Accessory Styling */
+.calc-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 6px;
+}
+
+.calc-display {
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  text-align: right;
+  padding: 6px 12px;
+  background: #000000;
+  color: #ffffff;
+  letter-spacing: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calc-btn {
+  font-family: var(--font-retro);
+  font-size: 18px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Paint Accessory Styling */
+.paint-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 6px;
+}
+
+.paint-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: var(--bg-panel);
+  padding: 4px;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.paint-tool-btn {
+  padding: 2px 8px;
+  font-family: var(--font-retro);
+  font-size: 14px;
+}
+
+.paint-tool-btn.active {
+  background: #ffffff;
+  color: #000000;
+  font-weight: bold;
+}
+
+.paint-canvas-wrap {
+  flex: 1;
+  background: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  padding: 4px;
+}
+
+#paint-canvas {
+  background: #ffffff;
+  cursor: crosshair;
+}
+
+/* Alt + Tab Overlay Switcher */
+.alt-tab-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 15000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alt-tab-box {
+  width: 500px;
+  max-width: 90vw;
+  padding: 16px;
+  background: var(--bg-panel);
+  color: var(--text-white);
+}
+
+.alt-tab-header {
+  font-family: var(--font-retro);
+  font-size: 18px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-mid);
+  padding-bottom: 4px;
+}
+
+.alt-tab-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.alt-tab-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  width: 96px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #111111;
+}
+
+.alt-tab-card.active {
+  border-color: #ffffff #555555 #555555 #ffffff;
+  background: #2b2b2b;
+}
+
+.alt-tab-card-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.alt-tab-card-title {
+  font-family: var(--font-retro);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* BSOD (Blue/Black Screen of Death) */
+.bsod-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0000aa;
+  color: #ffffff;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  padding: 40px;
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bsod-content {
+  max-width: 720px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.bsod-title {
+  background-color: #ffffff;
+  color: #0000aa;
+  display: inline-block;
+  padding: 2px 10px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.bsod-footer {
+  margin-top: 30px;
+  text-align: center;
+  font-family: var(--font-retro);
+  font-size: 20px;
+  color: #ffff55;
+  animation: blink 1s infinite;
+}

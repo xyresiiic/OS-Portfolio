@@ -154,6 +154,45 @@
         <span class="icon-label">Dodge.exe</span>
       </div>
 
+      <div class="desktop-icon" data-app="notepad" tabindex="0" role="button" aria-label="Notepad">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 4h16l6 6v18H6Z" />
+            <line x1="10" y1="12" x2="20" y2="12" />
+            <line x1="10" y1="16" x2="20" y2="16" />
+            <line x1="10" y1="20" x2="16" y2="20" />
+            <text x="17" y="23" font-size="7" font-weight="bold" fill="currentColor" stroke="none" font-family="VT323, monospace">TXT</text>
+          </svg>
+        </div>
+        <span class="icon-label">Notepad</span>
+      </div>
+
+      <div class="desktop-icon" data-app="calc" tabindex="0" role="button" aria-label="Calculator">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="6" y="4" width="20" height="24" rx="1" />
+            <rect x="9" y="7" width="14" height="5" fill="currentColor" fill-opacity="0.1" />
+            <circle cx="11" cy="16" r="1.5" fill="currentColor" />
+            <circle cx="16" cy="16" r="1.5" fill="currentColor" />
+            <circle cx="21" cy="16" r="1.5" fill="currentColor" />
+            <circle cx="11" cy="21" r="1.5" fill="currentColor" />
+            <circle cx="16" cy="21" r="1.5" fill="currentColor" />
+            <circle cx="21" cy="21" r="1.5" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="icon-label">Calc.exe</span>
+      </div>
+
+      <div class="desktop-icon" data-app="paint" tabindex="0" role="button" aria-label="Paint Studio">
+        <div class="icon-graphic">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 22l14-14 6 6-14 14H4v-6Z" />
+            <circle cx="23" cy="9" r="2" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="icon-label">Paint.exe</span>
+      </div>
+
       <div class="desktop-icon" data-app="recycle" tabindex="0" role="button" aria-label="Recycle Bin">
         <div class="icon-graphic">
           <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
@@ -169,18 +208,24 @@
       </div>
     </div>
 
+    <!-- Marquee Rubber-Band Selection Box -->
+    <div id="selection-box" class="selection-box hidden"></div>
+
     <!-- Active Windows Layer -->
     <div id="windows-container" class="windows-container"></div>
 
     <!-- Right-Click Context Menu -->
     <div id="context-menu" class="context-menu hidden">
-      <div class="context-menu-item" data-action="arrange">Arrange Icons</div>
-      <div class="context-menu-item" data-action="refresh">Refresh Desktop</div>
+      <div class="context-menu-item" data-action="arrange"><u>A</u>rrange Icons</div>
+      <div class="context-menu-item" data-action="cascade"><u>C</u>ascade Windows</div>
+      <div class="context-menu-item" data-action="tile"><u>T</u>ile Windows</div>
+      <div class="context-menu-item" data-action="refresh"><u>R</u>efresh Desktop</div>
       <div class="context-menu-separator"></div>
-      <div class="context-menu-item" data-action="toggle-crt">Toggle CRT Scanlines</div>
-      <div class="context-menu-item" data-action="toggle-audio">Toggle Audio Effects</div>
+      <div class="context-menu-item" data-action="run"><u>R</u>un...</div>
+      <div class="context-menu-item" data-action="notepad"><u>N</u>ew Text Document (Notepad)</div>
       <div class="context-menu-separator"></div>
-      <div class="context-menu-item" data-action="sys-info">System Properties...</div>
+      <div class="context-menu-item" data-action="display-props">Display <u>P</u>roperties...</div>
+      <div class="context-menu-item" data-action="sys-info">System <u>S</u>pecs...</div>
     </div>
   </div>
 
@@ -203,88 +248,68 @@
         <span class="sidebar-text">VEER PRATAP SINGH</span>
       </div>
       <div class="start-menu-items">
+        
+        <!-- Programs Submenu Trigger -->
+        <div class="start-item has-submenu" id="start-programs-trigger">
+          <span class="start-item-icon">📁</span>
+          <span><u>P</u>rograms</span>
+          <span class="submenu-arrow">►</span>
+          
+          <!-- Nested Programs Flyout Submenu -->
+          <div id="start-programs-menu" class="start-submenu outset-heavy hidden">
+            <div class="submenu-header">PORTFOLIO APPS</div>
+            <div class="start-item" data-app="about">👤 <u>A</u>bout Veer Singh</div>
+            <div class="start-item" data-app="projects">📁 <u>P</u>rojects Explorer</div>
+            <div class="start-item" data-app="creative">🎨 <u>C</u>reative Studio (@nazrithm)</div>
+            <div class="start-item" data-app="skills">📊 <u>S</u>ystem Properties</div>
+            <div class="start-item" data-app="experience">📜 <u>T</u>imeline &amp; Journey</div>
+            <div class="start-item" data-app="certs">🏆 <u>C</u>ertifications</div>
+            <div class="start-item" data-app="contact">✉️ <u>M</u>ail / Contact</div>
+            <div class="start-item" data-app="resume">📄 <u>R</u>esume.pdf</div>
+            
+            <div class="start-menu-divider"></div>
+            <div class="submenu-header">RETRO GAMES</div>
+            <div class="start-item" data-app="snake">🐍 Snake.exe</div>
+            <div class="start-item" data-app="game">🎮 Dodge.exe</div>
+            
+            <div class="start-menu-divider"></div>
+            <div class="submenu-header">ACCESSORIES</div>
+            <div class="start-item" data-app="notepad">📝 Notepad.exe</div>
+            <div class="start-item" data-app="calc">🧮 Calc.exe</div>
+            <div class="start-item" data-app="paint">🎨 Paint.exe</div>
+          </div>
+        </div>
+
         <div class="start-item" data-app="about">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="4" y="4" width="24" height="24" />
-            <circle cx="16" cy="13" r="5" />
-            <path d="M7 26c0-5 4-8 9-8s9 3 9 8" />
-          </svg>
+          <span class="start-item-icon">👤</span>
           <span>About Veer Singh</span>
         </div>
         <div class="start-item" data-app="projects">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <path d="M4 8h8l3 3h13v15H4Z" />
-          </svg>
+          <span class="start-item-icon">📁</span>
           <span>Projects Explorer</span>
         </div>
-        <div class="start-item" data-app="creative">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="4" y="4" width="24" height="24" />
-            <circle cx="16" cy="16" r="6" />
-          </svg>
-          <span>Creative Studio (@nazrithm)</span>
+        <div class="start-item" data-app="notepad">
+          <span class="start-item-icon">📝</span>
+          <span>Notepad.exe</span>
         </div>
-        <div class="start-item" data-app="skills">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="5" y="4" width="22" height="24" />
-            <line x1="9" y1="9" x2="23" y2="9" />
-            <line x1="9" y1="14" x2="23" y2="14" />
-          </svg>
-          <span>System Properties (Skills)</span>
+        <div class="start-item" data-app="calc">
+          <span class="start-item-icon">🧮</span>
+          <span>Calc.exe</span>
         </div>
-        <div class="start-item" data-app="experience">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="4" y="4" width="24" height="24" />
-            <path d="M8 11l4 4-4 4" />
-          </svg>
-          <span>Timeline &amp; Journey</span>
+        <div class="start-item" data-app="paint">
+          <span class="start-item-icon">🎨</span>
+          <span>Paint.exe</span>
         </div>
-        <div class="start-item" data-app="certs">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <circle cx="16" cy="12" r="7" />
-            <path d="M12 18l-3 10 7-4 7 4-3-10" />
-          </svg>
-          <span>Certifications</span>
-        </div>
-        <div class="start-item" data-app="contact">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="4" y="7" width="24" height="18" />
-            <path d="M4 7l12 10L28 7" />
-          </svg>
-          <span>Send Message (Mail)</span>
-        </div>
-        <div class="start-item" data-app="resume">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <path d="M6 4h14l6 6v18H6Z" />
-            <path d="M20 4v6h6" />
-          </svg>
-          <span>View Resume (PDF)</span>
-        </div>
-        <div class="start-item" data-app="snake">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <path d="M4 22h8v-8h8v-8h8" />
-            <circle cx="28" cy="6" r="2" fill="currentColor" />
-          </svg>
-          <span>Snake Game (Classic)</span>
-        </div>
-        <div class="start-item" data-app="game">
-          <svg class="start-item-icon" viewBox="0 0 32 32" width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <rect x="4" y="8" width="24" height="16" rx="2" />
-            <circle cx="21" cy="14" r="1.5" fill="currentColor" />
-          </svg>
-          <span>Dodge &amp; Catch Game</span>
-        </div>
+
         <div class="start-menu-divider"></div>
+        <div class="start-item" id="start-run-item">
+          <span class="start-item-icon">🏃</span>
+          <span><u>R</u>un...</span>
+        </div>
+        <div class="start-item" id="start-display-props-item">
+          <span class="start-item-icon">🖥️</span>
+          <span>Display <u>P</u>roperties...</span>
+        </div>
         <div class="start-item" id="sound-toggle-item">
           <span class="start-item-icon">🔊</span>
           <span id="sound-toggle-label">Audio: OFF</span>
@@ -308,6 +333,28 @@
     <div class="system-tray inset">
       <button id="tray-sound-btn" class="tray-btn" title="Toggle UI Audio">🔇</button>
       <span id="system-clock" class="system-clock">00:00:00 AM</span>
+    </div>
+  </div>
+
+  <!-- Alt + Tab Window Switcher Overlay -->
+  <div id="alt-tab-overlay" class="alt-tab-overlay hidden">
+    <div class="alt-tab-box outset-heavy">
+      <div class="alt-tab-header">NAZRITHM OS — WINDOW SWITCHER (ALT+TAB)</div>
+      <div id="alt-tab-list" class="alt-tab-list"></div>
+    </div>
+  </div>
+
+  <!-- BSOD Error Screen Overlay -->
+  <div id="bsod-screen" class="bsod-screen hidden">
+    <div class="bsod-content">
+      <div class="bsod-title">*** SYSTEM WARNING / EXCEPTION ***</div>
+      <p>An exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
+      <p>The current application will be terminated or restarted.</p>
+      <br>
+      <p>* Press any key to return to NAZRITHM OS Desktop.</p>
+      <p>* Press CTRL+ALT+DEL to restart your computer.</p>
+      <br>
+      <div class="bsod-footer">[ CLICK ANYWHERE TO CONTINUE ]</div>
     </div>
   </div>
 
