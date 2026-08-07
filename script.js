@@ -425,6 +425,10 @@ class WindowManager {
       initialWidth = Math.min(360, desktopWidth - 30);
       initialHeight = 440;
     }
+    if (appId === 'terminal') {
+      initialWidth = Math.min(740, desktopWidth - 30);
+      initialHeight = Math.min(500, desktopHeight - 90);
+    }
 
     const left = Math.max(15, Math.min(50 + (this.offsetCount * 22), desktopWidth - initialWidth - 15));
     const top = Math.max(15, Math.min(35 + (this.offsetCount * 22), desktopHeight - initialHeight - 50));
@@ -1111,6 +1115,10 @@ function openAppWindow(appId) {
       break;
     case 'run':
       windowManager.open('run', 'Run Program...', buildRunContent(), '🏃');
+      break;
+    case 'terminal':
+      windowManager.open('terminal', 'MS-DOS Prompt — Terminal v1.0', buildTerminalContent(), '💻');
+      initTerminal();
       break;
     case 'display-props':
       windowManager.open('display-props', 'Display Properties — Wallpaper Settings', buildDisplayPropsContent(), '🖥️');
@@ -2213,17 +2221,616 @@ window.executeRunCmd = function () {
 
   if (['about', 'projects', 'creative', 'skills', 'experience', 'certs', 'contact', 'resume', 'snake', 'game', 'recycle', 'notepad', 'calc', 'paint', 'display-props'].includes(cmd)) {
     openAppWindow(cmd);
+  } else if (['terminal', 'cmd'].includes(cmd)) {
+    openAppWindow('terminal');
+  } else if (['help', 'certificates', 'contact', 'experience', 'skills', 'matrix'].includes(cmd)) {
+    openAppWindow('terminal');
+    setTimeout(() => {
+      execQuickTermCmd(cmd === 'certificates' ? 'certificates' : cmd);
+    }, 150);
   } else if (cmd === 'bsod') {
     triggerBSODScreen();
-  } else if (cmd === 'matrix') {
-    setDesktopWallpaperPattern('matrix');
-  } else if (cmd === 'help') {
-    alert("Available commands:\nabout, projects, creative, skills, experience, certs, contact, resume, snake, game, notepad, calc, paint, display-props, bsod, matrix");
   } else if (cmd !== '') {
     audioEngine.playError();
     alert(`Cannot find '${cmd}'. Make sure you typed the name correctly, and then try again.`);
   }
 };
+
+// ==========================================================================
+// 19. RETRO TERMINAL (MS-DOS COMMAND PROMPT ENGINE)
+// ==========================================================================
+
+let termHistory = [];
+let termHistoryIndex = -1;
+let termMatrixActive = false;
+let termMatrixInterval = null;
+
+function buildTerminalContent() {
+  return `
+    <div id="terminal-container" class="terminal-container terminal-theme-green">
+      <canvas id="terminal-matrix-canvas" class="terminal-matrix-canvas hidden"></canvas>
+      
+      <div class="terminal-header-toolbar">
+        <div style="font-family:var(--font-retro); font-size:15px; font-weight:bold; letter-spacing:0.5px;">
+          NAZRITHM COMMAND INTERFACE v1.0 [TTY 1]
+        </div>
+        <div class="terminal-quick-cmds">
+          <span style="font-family:var(--font-retro); font-size:13px; opacity:0.75;">THEME:</span>
+          <button class="terminal-quick-btn" onclick="setTerminalTheme('green')">Green</button>
+          <button class="terminal-quick-btn" onclick="setTerminalTheme('amber')">Amber</button>
+          <button class="terminal-quick-btn" onclick="setTerminalTheme('cyan')">Cyan</button>
+          <button class="terminal-quick-btn" onclick="setTerminalTheme('white')">White</button>
+        </div>
+      </div>
+
+      <div class="terminal-header-toolbar" style="margin-bottom:10px;">
+        <div class="terminal-quick-cmds">
+          <span style="font-family:var(--font-retro); font-size:13px; opacity:0.75;">COMMANDS:</span>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('help')">help</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('contact')">contact</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('experience')">experience</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('certificates')">certificates</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('skills')">skills</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('projects')">projects</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('matrix')">matrix</button>
+          <button class="terminal-quick-btn" onclick="execQuickTermCmd('clear')">clear</button>
+        </div>
+      </div>
+
+      <div class="terminal-banner">
+NAZRITHM MS-DOS v6.22 (VEER PRATAP SINGH OS TERMINAL)
+Copyright (C) 2026 Veer Pratap Singh. All rights reserved.
+
+Type <span style="text-decoration:underline; font-weight:bold;">help</span> to display a list of built-in commands.
+Type <span style="text-decoration:underline; font-weight:bold;">contact</span>, <span style="text-decoration:underline; font-weight:bold;">experience</span>, <span style="text-decoration:underline; font-weight:bold;">certificates</span>, or <span style="text-decoration:underline; font-weight:bold;">skills</span> to explore.
+      </div>
+
+      <div id="terminal-output-buffer" class="terminal-output"></div>
+
+      <div class="terminal-line-entry">
+        <span class="terminal-prompt-label">C:\\VEER_OS&gt;</span>
+        <div class="terminal-input-wrapper">
+          <input type="text" id="terminal-input" class="terminal-input-field" autocomplete="off" spellcheck="false" autofocus>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.setTerminalTheme = function (themeName) {
+  audioEngine.playClick();
+  const term = document.getElementById('terminal-container');
+  if (!term) return;
+  term.classList.remove('terminal-theme-green', 'terminal-theme-amber', 'terminal-theme-cyan', 'terminal-theme-white');
+  term.classList.add(`terminal-theme-${themeName}`);
+};
+
+window.execQuickTermCmd = function (cmdStr) {
+  const input = document.getElementById('terminal-input');
+  if (input) {
+    input.value = cmdStr;
+    handleTerminalSubmit(cmdStr);
+  }
+};
+
+function initTerminal() {
+  const termContainer = document.getElementById('terminal-container');
+  const input = document.getElementById('terminal-input');
+  if (!termContainer || !input) return;
+
+  termContainer.addEventListener('click', () => {
+    input.focus();
+  });
+
+  input.focus();
+  termHistoryIndex = termHistory.length;
+
+  input.onkeydown = (e) => {
+    if (e.key.length === 1) audioEngine.playTypeSound();
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const rawCmd = input.value;
+      input.value = '';
+      handleTerminalSubmit(rawCmd);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (termHistory.length > 0 && termHistoryIndex > 0) {
+        termHistoryIndex--;
+        input.value = termHistory[termHistoryIndex] || '';
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (termHistoryIndex < termHistory.length - 1) {
+        termHistoryIndex++;
+        input.value = termHistory[termHistoryIndex] || '';
+      } else {
+        termHistoryIndex = termHistory.length;
+        input.value = '';
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      autoCompleteTermCmd(input);
+    }
+  };
+}
+
+function autoCompleteTermCmd(inputElem) {
+  const validCmds = [
+    'help', 'contact', 'experience', 'certificates', 'certs', 'about', 'bio',
+    'skills', 'projects', 'resume', 'clear', 'cls', 'date', 'time', 'ls', 'dir',
+    'cat', 'theme', 'matrix', 'echo', 'snake', 'dodge', 'calc', 'notepad', 'paint', 'sudo', 'exit'
+  ];
+  const val = inputElem.value.trim().toLowerCase();
+  if (!val) return;
+
+  const matches = validCmds.filter(c => c.startsWith(val));
+  if (matches.length === 1) {
+    inputElem.value = matches[0];
+    audioEngine.playClick();
+  } else if (matches.length > 1) {
+    appendTermOutput(`<div style="opacity:0.7;">Matches: ${matches.join('  ')}</div>`);
+  }
+}
+
+function handleTerminalSubmit(rawCmd) {
+  const outputBuffer = document.getElementById('terminal-output-buffer');
+  const termContainer = document.getElementById('terminal-container');
+  if (!outputBuffer) return;
+
+  const trimmed = rawCmd.trim();
+  audioEngine.playClick();
+
+  const cmdLine = document.createElement('div');
+  cmdLine.className = 'terminal-line-entry';
+  cmdLine.innerHTML = `<span class="terminal-prompt-label">C:\\VEER_OS&gt;</span> <span>${escapeHtml(rawCmd)}</span>`;
+  outputBuffer.appendChild(cmdLine);
+
+  if (trimmed) {
+    termHistory.push(trimmed);
+    termHistoryIndex = termHistory.length;
+    processTermCmd(trimmed);
+  }
+
+  if (termContainer) {
+    termContainer.scrollTop = termContainer.scrollHeight;
+  }
+}
+
+function appendTermOutput(htmlContent) {
+  const outputBuffer = document.getElementById('terminal-output-buffer');
+  if (!outputBuffer) return;
+  const outBlock = document.createElement('div');
+  outBlock.className = 'terminal-out-block';
+  outBlock.innerHTML = htmlContent;
+  outputBuffer.appendChild(outBlock);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function processTermCmd(cmdStr) {
+  const parts = cmdStr.trim().split(/\s+/);
+  const mainCmd = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  switch (mainCmd) {
+    case 'help':
+    case '?':
+      renderTermHelp();
+      break;
+
+    case 'contact':
+    case 'mail':
+    case 'email':
+      if (args[0] === 'send') {
+        const msg = args.slice(1).join(' ');
+        appendTermOutput(`
+          <div style="color:#00ff66; margin-bottom:4px;">[MAIL DISPATCH] Opening Mail Window with pre-filled message...</div>
+          <div class="terminal-badge">MSG</div> "${escapeHtml(msg || 'Hello Veer!')}"
+        `);
+        openAppWindow('contact');
+      } else {
+        renderTermContact();
+      }
+      break;
+
+    case 'experience':
+    case 'exp':
+    case 'timeline':
+    case 'history':
+      renderTermExperience();
+      break;
+
+    case 'certificates':
+    case 'certs':
+    case 'awards':
+      renderTermCertificates();
+      break;
+
+    case 'about':
+    case 'bio':
+    case 'whoami':
+      renderTermAbout();
+      break;
+
+    case 'skills':
+      renderTermSkills();
+      break;
+
+    case 'projects':
+      renderTermProjects(args[0]);
+      break;
+
+    case 'resume':
+      renderTermResume();
+      break;
+
+    case 'ls':
+    case 'dir':
+      renderTermDirectory();
+      break;
+
+    case 'cat':
+      renderTermCat(args[0]);
+      break;
+
+    case 'clear':
+    case 'cls':
+      const buffer = document.getElementById('terminal-output-buffer');
+      if (buffer) buffer.innerHTML = '';
+      break;
+
+    case 'date':
+    case 'time':
+      const now = new Date();
+      appendTermOutput(`
+        <div>Current System Date: <strong>${now.toDateString()}</strong></div>
+        <div>Current System Time: <strong>${now.toTimeString()}</strong></div>
+        <div>OS Uptime: Session active</div>
+      `);
+      break;
+
+    case 'echo':
+      appendTermOutput(`<div>${escapeHtml(args.join(' '))}</div>`);
+      break;
+
+    case 'theme':
+      if (['green', 'amber', 'cyan', 'white'].includes(args[0])) {
+        setTerminalTheme(args[0]);
+        appendTermOutput(`<div>Terminal theme switched to <strong>${args[0]}</strong>.</div>`);
+      } else {
+        appendTermOutput(`<div>Usage: theme [green | amber | cyan | white]</div>`);
+      }
+      break;
+
+    case 'matrix':
+      toggleTermMatrix();
+      break;
+
+    case 'snake':
+    case 'dodge':
+    case 'game':
+    case 'notepad':
+    case 'calc':
+    case 'paint':
+      appendTermOutput(`<div>Launching process <strong>${mainCmd}.exe</strong>...</div>`);
+      openAppWindow(mainCmd === 'game' ? 'game' : mainCmd);
+      break;
+
+    case 'sudo':
+    case 'root':
+      appendTermOutput(`
+        <div style="color:#ff5555;">[PERMISSION DENIED] User 'guest' is not in the sudoers file.</div>
+        <div>Operator Veer Pratap Singh holds root permissions on this kernel.</div>
+      `);
+      break;
+
+    case 'exit':
+    case 'quit':
+      appendTermOutput(`<div>Terminating terminal process...</div>`);
+      setTimeout(() => windowManager.close('terminal'), 300);
+      break;
+
+    default:
+      appendTermOutput(`
+        <div style="color:#ff5555;">Bad command or filename '${escapeHtml(mainCmd)}'.</div>
+        <div>Type <span style="text-decoration:underline; cursor:pointer;" onclick="execQuickTermCmd('help')">help</span> for a list of valid system commands.</div>
+      `);
+  }
+}
+
+function renderTermHelp() {
+  appendTermOutput(`
+    <div style="margin-bottom:6px; font-weight:bold; text-decoration:underline;">AVAILABLE COMMANDS REFERENCE MANUAL:</div>
+    <table class="terminal-table">
+      <thead>
+        <tr><th>COMMAND</th><th>DESCRIPTION</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>help</td><td>Displays this command help manual</td></tr>
+        <tr><td>contact [send &lt;msg&gt;]</td><td>View contact options or dispatch message</td></tr>
+        <tr><td>experience</td><td>View career timeline, hackathons &amp; internships</td></tr>
+        <tr><td>certificates</td><td>List professional certs &amp; institute awards</td></tr>
+        <tr><td>about</td><td>Developer background, college &amp; bio</td></tr>
+        <tr><td>skills</td><td>Technical skills with ASCII meter bars</td></tr>
+        <tr><td>projects [id]</td><td>Explore portfolio apps or view deep specs</td></tr>
+        <tr><td>resume</td><td>View summary or download Resume.pdf</td></tr>
+        <tr><td>ls / dir</td><td>List virtual files in current directory</td></tr>
+        <tr><td>cat &lt;file&gt;</td><td>Display contents of virtual file</td></tr>
+        <tr><td>theme &lt;color&gt;</td><td>Switch theme (green, amber, cyan, white)</td></tr>
+        <tr><td>matrix</td><td>Toggle digital rain code stream overlay</td></tr>
+        <tr><td>date / time</td><td>Show current system timestamp &amp; date</td></tr>
+        <tr><td>clear / cls</td><td>Clear terminal screen buffer</td></tr>
+        <tr><td>snake / calc / notepad / paint</td><td>Launch GUI application windows</td></tr>
+        <tr><td>exit</td><td>Close MS-DOS Terminal window</td></tr>
+      </tbody>
+    </table>
+    <div style="opacity:0.8; margin-top:4px;">[ TIP: Press TAB for command auto-completion, or UP/DOWN arrows for command history ]</div>
+  `);
+}
+
+function renderTermContact() {
+  appendTermOutput(`
+================================================================================
+VEER PRATAP SINGH — CONTACT DIRECTORY
+================================================================================
+📧 EMAIL:       ${PORTFOLIO_CONFIG.contactEmail}
+🔗 LINKEDIN:    <a class="terminal-link" href="${PORTFOLIO_CONFIG.linkedinUrl}" target="_blank">${PORTFOLIO_CONFIG.linkedinUrl}</a>
+💻 GITHUB:      <a class="terminal-link" href="${PORTFOLIO_CONFIG.githubUrl}" target="_blank">${PORTFOLIO_CONFIG.githubUrl}</a>
+🎨 STUDIO IG:   <a class="terminal-link" href="${PORTFOLIO_CONFIG.instagramStudio}" target="_blank">@nazrithm (Creative Studio)</a>
+📸 PERSONAL IG: <a class="terminal-link" href="${PORTFOLIO_CONFIG.instagramPersonal}" target="_blank">@ivee.rrr (Photography)</a>
+🏫 INSTITUTE:   ${PORTFOLIO_CONFIG.college}
+
+[ DISPATCH MESSAGE ]: Type 'contact send Your Message Here' to trigger direct mail window!
+  `);
+}
+
+function renderTermExperience() {
+  const expLines = EXP_DATA.map(exp => `
+  <div style="margin-bottom:10px; border-left: 2px solid currentColor; padding-left: 10px;">
+    <div style="font-weight:bold;">[${exp.date}] ${exp.role} @ ${exp.company}</div>
+    <div style="margin-top:2px;">${exp.desc}</div>
+    <div style="opacity:0.75; font-size:12px; margin-top:2px;">Tech: ${exp.tech}</div>
+  </div>
+  `).join('');
+
+  appendTermOutput(`
+================================================================================
+CAREER TIMELINE & EXPERIENCE JOURNEY
+================================================================================
+${expLines}
+  `);
+}
+
+function renderTermCertificates() {
+  const proList = CERTS_DATA.pro.map(c => `<li>${c.icon} <strong>${c.name}</strong> — ${c.org}</li>`).join('');
+  const recList = CERTS_DATA.rec.map(c => `<li>${c.icon} <strong>${c.name}</strong> — ${c.org}</li>`).join('');
+
+  appendTermOutput(`
+================================================================================
+CERTIFICATIONS & RECOGNITIONS
+================================================================================
+<div style="font-weight:bold; margin-bottom:4px; text-decoration:underline;">PROFESSIONAL CERTIFICATIONS:</div>
+<ul style="margin-left:20px; margin-bottom:10px;">
+  ${proList}
+</ul>
+
+<div style="font-weight:bold; margin-bottom:4px; text-decoration:underline;">ACHIEVEMENTS & RECOGNITION AWARDS:</div>
+<ul style="margin-left:20px;">
+  ${recList}
+</ul>
+  `);
+}
+
+function renderTermAbout() {
+  const facts = BIO_DATA.quickFacts.map(f => `<div><span class="terminal-badge">${f.label}</span> ${f.value}</div>`).join('');
+
+  appendTermOutput(`
+<pre style="font-family:var(--font-retro); font-size:14px; line-height:1.1;">
+${BIO_DATA.asciiArt}
+</pre>
+<strong>${PORTFOLIO_CONFIG.developerName}</strong> — ${PORTFOLIO_CONFIG.developerTitle}
+<em>"${PORTFOLIO_CONFIG.tagline}"</em>
+
+<div style="margin:8px 0;">
+  ${facts}
+</div>
+<div style="white-space:pre-line; opacity:0.9;">${BIO_DATA.bioText}</div>
+  `);
+}
+
+function renderTermSkills() {
+  let outputHtml = `
+================================================================================
+SYSTEM TECHNICAL SKILLS & PROFICIENCY METERS
+================================================================================
+  `;
+
+  for (const [category, skillList] of Object.entries(SKILLS_DATA)) {
+    outputHtml += `<div style="font-weight:bold; margin-top:8px; text-decoration:underline;">[ ${category.toUpperCase()} ]</div>`;
+    skillList.forEach(skill => {
+      const blocks = Math.round(skill.level / 10);
+      const bar = "█".repeat(blocks) + "░".repeat(10 - blocks);
+      outputHtml += `<div style="margin:2px 0;">${skill.name.padEnd(30, '.')} [${bar}] ${skill.level}%</div>`;
+    });
+  }
+
+  appendTermOutput(outputHtml);
+}
+
+function renderTermProjects(targetId) {
+  if (targetId) {
+    const proj = PROJECTS_DATA.find(p => p.id === targetId.toLowerCase() || p.title.toLowerCase().includes(targetId.toLowerCase()));
+    if (proj) {
+      appendTermOutput(`
+================================================================================
+PROJECT SPECIFICATION: ${proj.title.toUpperCase()}
+================================================================================
+Tagline:  ${proj.tagline}
+Overview: ${proj.shortDesc}
+
+Features:
+${proj.features.map(f => `  • ${f}`).join('\n')}
+
+Tech Stack: [ ${proj.techStack.join(', ')} ]
+${proj.liveUrl !== '#' ? `Live Demo: <a class="terminal-link" href="${proj.liveUrl}" target="_blank">${proj.liveUrl}</a>\n` : ''}Repository: <a class="terminal-link" href="${proj.repoUrl}" target="_blank">${proj.repoUrl}</a>
+      `);
+      return;
+    }
+  }
+
+  const projRows = PROJECTS_DATA.map(p => `
+    <tr>
+      <td><span class="terminal-link" onclick="execQuickTermCmd('projects ${p.id}')">${p.id}</span></td>
+      <td><strong>${p.title}</strong></td>
+      <td>${p.techStack.slice(0, 3).join(', ')}</td>
+    </tr>
+  `).join('');
+
+  appendTermOutput(`
+================================================================================
+PORTFOLIO EXECUTABLE OBJECTS (/dev/projects)
+================================================================================
+<table class="terminal-table">
+  <thead><tr><th>ID</th><th>TITLE</th><th>STACK</th></tr></thead>
+  <tbody>${projRows}</tbody>
+</table>
+<div style="opacity:0.8;">[ Type 'projects &lt;id&gt;' for detailed project specifications ]</div>
+  `);
+}
+
+function renderTermResume() {
+  appendTermOutput(`
+================================================================================
+RESUME DOCUMENT SPECIFICATION — VEER PRATAP SINGH
+================================================================================
+Degree:    B.Tech Computer Science (2022 - 2028)
+Institute: Arya College of Engineering, Jaipur
+Focus:     Front-End Development, AI Systems & Creative Branding
+
+📄 Download Resume PDF:
+<a class="terminal-link" href="${PORTFOLIO_CONFIG.resumeLink}" download="Veer_Pratap_Singh_Resume.pdf">[ CLICK HERE TO DOWNLOAD RESUME.PDF ]</a>
+  `);
+}
+
+function renderTermDirectory() {
+  appendTermOutput(`
+ Directory of C:\\VEER_OS\\*.*
+
+08/07/2026  12:00 PM    &lt;DIR&gt;          projects.dir
+08/07/2026  12:00 PM             1,024 readme.txt
+08/07/2026  12:00 PM             2,048 bio.txt
+08/07/2026  12:00 PM             3,120 skills.json
+08/07/2026  12:00 PM             4,096 experience.log
+08/07/2026  12:00 PM             2,500 certs.txt
+08/07/2026  12:00 PM            53,396 resume.pdf
+               6 File(s)         66,184 bytes
+               1 Dir(s)     655,360,000 bytes free
+
+[ Type 'cat <filename>' to display file contents ]
+  `);
+}
+
+function renderTermCat(fileName) {
+  if (!fileName) {
+    appendTermOutput(`<div>Usage: cat &lt;filename&gt; (e.g. cat readme.txt)</div>`);
+    return;
+  }
+  const file = fileName.toLowerCase();
+
+  switch (file) {
+    case 'readme.txt':
+      appendTermOutput(`
+================================================================================
+README.TXT — VEER PRATAP SINGH PORTFOLIO OS
+================================================================================
+Welcome to NAZRITHM OS. This portfolio is engineered as a 90s monochrome Windows OS environment.
+Built with HTML5, CSS3, and JavaScript ES6.
+Developer: Veer Pratap Singh
+Studio: @nazrithm
+      `);
+      break;
+
+    case 'bio.txt':
+      renderTermAbout();
+      break;
+
+    case 'skills.json':
+      appendTermOutput(`<pre style="font-size:12px;">${JSON.stringify(SKILLS_DATA, null, 2)}</pre>`);
+      break;
+
+    case 'experience.log':
+      renderTermExperience();
+      break;
+
+    case 'certs.txt':
+      renderTermCertificates();
+      break;
+
+    case 'projects.dir':
+      renderTermProjects();
+      break;
+
+    case 'resume.pdf':
+      renderTermResume();
+      break;
+
+    default:
+      appendTermOutput(`<div>cat: ${escapeHtml(fileName)}: No such file or directory</div>`);
+  }
+}
+
+function toggleTermMatrix() {
+  const canvas = document.getElementById('terminal-matrix-canvas');
+  if (!canvas) return;
+
+  if (termMatrixActive) {
+    termMatrixActive = false;
+    canvas.classList.add('hidden');
+    if (termMatrixInterval) clearInterval(termMatrixInterval);
+    appendTermOutput(`<div>Matrix digital rain stream stopped.</div>`);
+  } else {
+    termMatrixActive = true;
+    canvas.classList.remove('hidden');
+    initMatrixRain(canvas);
+    appendTermOutput(`<div>Matrix digital rain stream activated. Type 'matrix' again to stop.</div>`);
+  }
+}
+
+function initMatrixRain(canvas) {
+  const ctx = canvas.getContext('2d');
+  const parent = canvas.parentElement;
+  if (!parent) return;
+  canvas.width = parent.clientWidth;
+  canvas.height = parent.clientHeight;
+
+  const chars = "0101010101ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*";
+  const fontSize = 12;
+  const cols = Math.floor(canvas.width / fontSize) || 20;
+  const drops = Array(cols).fill(1);
+
+  if (termMatrixInterval) clearInterval(termMatrixInterval);
+
+  termMatrixInterval = setInterval(() => {
+    ctx.fillStyle = "rgba(5, 5, 5, 0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff66";
+    ctx.font = `${fontSize}px monospace`;
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars.charAt(Math.floor(Math.random() * chars.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }, 40);
+}
 
 // 16. Display Properties & Wallpaper Switcher
 function buildDisplayPropsContent() {
