@@ -2,6 +2,11 @@
    RETRO OS PORTFOLIO
    ========================================================================== */
 
+// Mobile detection helper
+function isMobileDevice() {
+  return (window.matchMedia('(hover: none) and (pointer: coarse)').matches) || (window.innerWidth <= 768);
+}
+
 // ==========================================================================
 // PORTFOLIO DATA (MATCHING LIVE SITE)
 // ==========================================================================
@@ -605,6 +610,8 @@ class WindowManager {
     let isDragging = false;
 
     const onStart = (e) => {
+      // Skip drag on mobile — windows are fullscreen
+      if (isMobileDevice()) return;
       if (winElem.classList.contains('maximized')) return;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -1062,6 +1069,25 @@ function setupDesktopMechanics() {
       const appId = icon.dataset.app;
       openAppWindow(appId);
     });
+
+    // Mobile: single tap to open (touch devices have no dblclick)
+    let lastTapTime = 0;
+    icon.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTapTime < 350) {
+        // Double-tap: open app
+        e.preventDefault();
+        const appId = icon.dataset.app;
+        openAppWindow(appId);
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+        // Select on first tap
+        icons.forEach(i => i.classList.remove('selected'));
+        icon.classList.add('selected');
+        audioEngine.playClick();
+      }
+    });
   });
 }
 
@@ -1446,16 +1472,26 @@ function buildResumeContent() {
 // 9. Classic Snake Game Content & Logic (Growing Snake)
 function buildSnakeContent() {
   return `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:var(--font-retro); font-size:16px;">
-      <span>SNAKE.EXE — EAT FOOD TO GROW BIGGER!</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:var(--font-retro); font-size:16px; flex-wrap:wrap; gap:4px;">
+      <span>SNAKE.EXE</span>
       <span>SCORE: <strong id="snake-score">0</strong> | HIGH: <strong id="snake-high">0</strong></span>
     </div>
     <div class="inset" style="background:#000; display:flex; justify-content:center; align-items:center; padding:4px;">
       <canvas id="snake-canvas" width="500" height="340" style="background:#000; border:1px solid #444;"></canvas>
     </div>
-    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-      <button onclick="startSnakeGame()">🐍 Start / Restart Snake</button>
-      <span style="font-family:var(--font-retro); font-size:14px; color:#aaa;">CONTROLS: Arrow Keys or W/A/S/D</span>
+    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+      <button onclick="startSnakeGame()">🐍 Start / Restart</button>
+      <span style="font-family:var(--font-retro); font-size:13px; color:#aaa;">Arrow Keys / W-A-S-D</span>
+    </div>
+    <div class="mobile-game-controls" id="snake-mobile-controls">
+      <div class="mobile-dpad">
+        <div class="mobile-dpad-spacer"></div>
+        <button class="mobile-game-btn" data-snake-dir="up">▲</button>
+        <div class="mobile-dpad-spacer"></div>
+        <button class="mobile-game-btn" data-snake-dir="left">◀</button>
+        <button class="mobile-game-btn" data-snake-dir="down">▼</button>
+        <button class="mobile-game-btn" data-snake-dir="right">▶</button>
+      </div>
     </div>
   `;
 }
@@ -1632,16 +1668,20 @@ function drawGameOver(ctx, canvas, msg) {
 // 10. Dodge Game (Existing Mini Game)
 function buildGameContent() {
   return `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:var(--font-retro); font-size:16px;">
-      <span>DODGE BUGS, CATCH STARS! (DEV SURVIVAL GAME)</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:var(--font-retro); font-size:16px; flex-wrap:wrap; gap:4px;">
+      <span>DODGE & CATCH</span>
       <span>SCORE: <strong id="game-score">0</strong> | HIGH: <strong id="game-high">0</strong></span>
     </div>
     <div class="inset" style="background:#000; display:flex; justify-content:center; align-items:center; padding:4px;">
       <canvas id="dodge-canvas" width="600" height="340" style="background:#000; border:1px solid #444;"></canvas>
     </div>
-    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-      <button onclick="startDodgeGame()">🎮 Start / Restart Game</button>
-      <span style="font-family:var(--font-retro); font-size:14px; color:#aaa;">CONTROLS: ← → Left/Right Arrows or A/D Keys</span>
+    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+      <button onclick="startDodgeGame()">🎮 Start / Restart</button>
+      <span style="font-family:var(--font-retro); font-size:13px; color:#aaa;">← → or A/D</span>
+    </div>
+    <div class="mobile-game-controls" id="dodge-mobile-controls" style="gap:20px;">
+      <button class="mobile-game-btn" data-dodge-dir="left" style="width:72px; height:72px; font-size:32px;">◀</button>
+      <button class="mobile-game-btn" data-dodge-dir="right" style="width:72px; height:72px; font-size:32px;">▶</button>
     </div>
   `;
 }
@@ -2124,54 +2164,78 @@ function initPaintCanvas() {
 
   let startX = 0, startY = 0;
 
-  canvas.onmousedown = (e) => {
-    paintDrawing = true;
+  // Helper to get coords scaled to canvas internal size
+  function getCoords(e) {
     const rect = canvas.getBoundingClientRect();
-    startX = e.clientX - rect.left;
-    startY = e.clientY - rect.top;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    // Scale coords if canvas display size differs from internal size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function onPaintStart(e) {
+    paintDrawing = true;
+    const coords = getCoords(e);
+    startX = coords.x;
+    startY = coords.y;
     if (paintTool === 'pen' || paintTool === 'eraser') {
       paintCtx.beginPath();
       paintCtx.moveTo(startX, startY);
     }
-  };
+  }
 
-  canvas.onmousemove = (e) => {
+  function onPaintMove(e) {
     if (!paintDrawing) return;
-    const rect = canvas.getBoundingClientRect();
-    const curX = e.clientX - rect.left;
-    const curY = e.clientY - rect.top;
+    if (e.cancelable) e.preventDefault();
+    const coords = getCoords(e);
 
     if (paintTool === 'pen') {
       paintCtx.strokeStyle = "#ffffff";
-      paintCtx.lineTo(curX, curY);
+      paintCtx.lineTo(coords.x, coords.y);
       paintCtx.stroke();
     } else if (paintTool === 'eraser') {
       paintCtx.strokeStyle = "#000000";
       paintCtx.lineWidth = 12;
-      paintCtx.lineTo(curX, curY);
+      paintCtx.lineTo(coords.x, coords.y);
       paintCtx.stroke();
       paintCtx.lineWidth = 2;
     }
-  };
+  }
 
-  canvas.onmouseup = (e) => {
+  function onPaintEnd(e) {
     if (!paintDrawing) return;
     paintDrawing = false;
-    const rect = canvas.getBoundingClientRect();
-    const curX = e.clientX - rect.left;
-    const curY = e.clientY - rect.top;
+    const coords = e.changedTouches ? {
+      x: (e.changedTouches[0].clientX - canvas.getBoundingClientRect().left) * (canvas.width / canvas.getBoundingClientRect().width),
+      y: (e.changedTouches[0].clientY - canvas.getBoundingClientRect().top) * (canvas.height / canvas.getBoundingClientRect().height)
+    } : getCoords(e);
 
     if (paintTool === 'line') {
       paintCtx.strokeStyle = "#ffffff";
       paintCtx.beginPath();
       paintCtx.moveTo(startX, startY);
-      paintCtx.lineTo(curX, curY);
+      paintCtx.lineTo(coords.x, coords.y);
       paintCtx.stroke();
     } else if (paintTool === 'rect') {
       paintCtx.strokeStyle = "#ffffff";
-      paintCtx.strokeRect(startX, startY, curX - startX, curY - startY);
+      paintCtx.strokeRect(startX, startY, coords.x - startX, coords.y - startY);
     }
-  };
+  }
+
+  // Mouse events
+  canvas.addEventListener('mousedown', onPaintStart);
+  canvas.addEventListener('mousemove', onPaintMove);
+  canvas.addEventListener('mouseup', onPaintEnd);
+
+  // Touch events for mobile
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onPaintStart(e); }, { passive: false });
+  canvas.addEventListener('touchmove', (e) => { onPaintMove(e); }, { passive: false });
+  canvas.addEventListener('touchend', (e) => { onPaintEnd(e); });
 }
 
 window.clearPaintCanvas = function () {
@@ -2936,6 +3000,7 @@ function handleAltTabCycle() {
 document.addEventListener('DOMContentLoaded', () => {
   setupDesktopMechanics();
   initSystemHotkeys();
+  initMobileGameControls();
 
   const boot = new BootController(() => {
     audioEngine.playChime();
@@ -2944,3 +3009,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
   boot.start();
 });
+
+// ==========================================================================
+// MOBILE TOUCH CONTROLS FOR GAMES
+// ==========================================================================
+
+function initMobileGameControls() {
+  // Snake D-pad touch controls
+  document.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('[data-snake-dir]');
+    if (!btn) return;
+    e.preventDefault();
+    const dir = btn.dataset.snakeDir;
+    let keyMap = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: keyMap[dir] }));
+  }, { passive: false });
+
+  // Dodge game L/R touch controls
+  document.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('[data-dodge-dir]');
+    if (!btn) return;
+    e.preventDefault();
+    const dir = btn.dataset.dodgeDir;
+    let keyStr = dir === 'left' ? 'ArrowLeft' : 'ArrowRight';
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: keyStr }));
+  }, { passive: false });
+
+  document.addEventListener('touchend', (e) => {
+    const btn = e.target.closest('[data-dodge-dir]');
+    if (!btn) return;
+    const dir = btn.dataset.dodgeDir;
+    let keyStr = dir === 'left' ? 'ArrowLeft' : 'ArrowRight';
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: keyStr }));
+  });
+
+  // Swipe support for Snake game on the canvas itself
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    const canvas = e.target.closest('#snake-canvas');
+    if (!canvas) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const canvas = e.target.closest('#snake-canvas');
+    if (!canvas) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    if (Math.max(absDx, absDy) < 20) return; // too short swipe
+
+    let key;
+    if (absDx > absDy) {
+      key = dx > 0 ? 'ArrowRight' : 'ArrowLeft';
+    } else {
+      key = dy > 0 ? 'ArrowDown' : 'ArrowUp';
+    }
+    window.dispatchEvent(new KeyboardEvent('keydown', { key }));
+  });
+}

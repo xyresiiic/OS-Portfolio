@@ -987,37 +987,676 @@ p {
 }
 
 /* ==========================================================================
-   RESPONSIVE MOBILE FALLBACK (< 768px)
+   RESPONSIVE MOBILE — TABLETS (≤ 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  .desktop-grid {
-    grid-template-columns: repeat(3, 1fr);
-    flex-direction: row;
-    align-content: flex-start;
+  :root {
+    --taskbar-height: 40px;
   }
 
+  /* Desktop Grid: switch to horizontal wrapping grid */
+  .desktop-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    height: auto;
+    padding: 12px 8px;
+    gap: 10px 6px;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+
+  .desktop-icon {
+    width: auto;
+    padding: 6px 2px;
+  }
+
+  .icon-graphic {
+    width: 32px;
+    height: 32px;
+  }
+
+  .icon-graphic svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .icon-label {
+    font-size: 12px;
+  }
+
+  /* Windows: force fullscreen on tablets */
   .window {
     width: 100vw !important;
     height: calc(100vh - var(--taskbar-height)) !important;
     top: 0 !important;
     left: 0 !important;
-    min-width: 100%;
-    min-height: 100%;
+    min-width: 100vw;
+    min-height: calc(100vh - var(--taskbar-height));
+    border: none;
+    box-shadow: none;
   }
 
   .window-resize-handle {
     display: none;
   }
 
+  .window-header {
+    cursor: default;
+  }
+
+  /* Taskbar */
   .task-tab {
-    min-width: 80px;
-    max-width: 120px;
+    min-width: 60px;
+    max-width: 100px;
+    font-size: 13px;
+    height: 28px;
+    padding: 0 4px;
+  }
+
+  .system-tray {
+    padding: 0 4px;
+    gap: 4px;
     font-size: 13px;
   }
 
+  /* Start Menu */
+  .start-menu {
+    width: 260px;
+    max-height: calc(100vh - var(--taskbar-height) - 4px);
+  }
+
+  .start-menu-items {
+    overflow-y: auto;
+    max-height: calc(100vh - var(--taskbar-height) - 20px);
+  }
+
+  .start-submenu {
+    position: fixed;
+    left: 0;
+    top: auto;
+    bottom: var(--taskbar-height);
+    width: 100vw;
+    max-height: 60vh;
+    overflow-y: auto;
+    z-index: 2200;
+  }
+
+  /* Boot Screen */
   .boot-screen {
+    padding: 20px 16px;
+    font-size: 14px;
+  }
+
+  .boot-header {
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .boot-log {
+    font-size: 12px;
+    min-height: 200px;
+  }
+
+  .boot-skip-hint {
+    font-size: 14px;
+  }
+
+  /* Tab Headers (Skills page) */
+  .tab-headers {
+    flex-wrap: wrap;
+    gap: 2px;
+    padding-left: 2px;
+  }
+
+  .tab-btn {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  /* Bio Container */
+  .bio-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ascii-avatar-box {
+    width: 100px;
+    height: 100px;
+  }
+
+  .ascii-avatar-box pre {
+    font-size: 10px;
+  }
+
+  /* Project Grid */
+  .projects-folder-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 10px;
+    padding: 6px;
+  }
+
+  /* Game Canvases — scale to container */
+  #snake-canvas,
+  #dodge-canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+  }
+
+  /* Calculator */
+  .calc-container {
+    max-width: 100%;
+    padding: 2px;
+  }
+
+  .calc-btn {
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .calc-display {
+    font-size: 28px;
+  }
+
+  /* Paint Canvas */
+  #paint-canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+  }
+
+  .paint-toolbar {
+    gap: 4px;
+  }
+
+  .paint-tool-btn {
+    font-size: 12px;
+    padding: 2px 5px;
+  }
+
+  /* Notepad */
+  .notepad-textarea {
+    font-size: 14px;
+    min-height: 200px;
+  }
+
+  /* Terminal */
+  .terminal-container {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .terminal-banner {
+    font-size: 13px;
+  }
+
+  .terminal-header-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .terminal-quick-cmds {
+    gap: 3px;
+  }
+
+  .terminal-quick-btn {
+    font-size: 12px;
+    padding: 2px 4px;
+  }
+
+  /* PDF Resume */
+  .document-page {
+    padding: 14px;
+    max-width: 100%;
+  }
+
+  .pdf-preview-bar {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  /* Context Menu */
+  .context-menu {
+    width: 200px;
+  }
+
+  /* Alt+Tab */
+  .alt-tab-box {
+    width: 90vw;
+    padding: 10px;
+  }
+
+  .alt-tab-card {
+    width: 72px;
+    padding: 6px;
+  }
+
+  .alt-tab-card-icon {
+    font-size: 20px;
+  }
+
+  .alt-tab-card-title {
+    font-size: 11px;
+  }
+
+  /* BSOD */
+  .bsod-screen {
     padding: 20px;
+  }
+
+  .bsod-content {
+    font-size: 13px;
+  }
+
+  .bsod-title {
+    font-size: 14px;
+  }
+
+  /* Shutdown */
+  .shutdown-title {
+    font-size: 22px;
+  }
+
+  .shutdown-sub {
     font-size: 16px;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE MOBILE — PHONES (≤ 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  :root {
+    --taskbar-height: 44px;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  /* Desktop: 3 columns on small phones */
+  .desktop-grid {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 8px 4px;
+    gap: 6px 4px;
+  }
+
+  .desktop-icon {
+    padding: 4px 2px;
+  }
+
+  .icon-graphic {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 3px;
+  }
+
+  .icon-graphic svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .icon-label {
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  /* Taskbar tighter */
+  .taskbar {
+    padding: 2px;
+  }
+
+  .start-button {
+    padding: 0 6px;
+    height: 32px;
+    gap: 4px;
+    font-size: 14px;
+  }
+
+  .start-text {
+    font-size: 13px;
+  }
+
+  .task-tab {
+    min-width: 44px;
+    max-width: 80px;
+    font-size: 11px;
+    height: 28px;
+    padding: 0 3px;
+    gap: 2px;
+  }
+
+  .taskbar-tasks {
+    margin: 0 2px;
+    gap: 2px;
+  }
+
+  .system-tray {
+    padding: 0 3px;
+    gap: 3px;
+    font-size: 12px;
+  }
+
+  .system-clock {
+    font-size: 12px;
+  }
+
+  /* Start Menu full-width on small phones */
+  .start-menu {
+    width: calc(100vw - 4px);
+    left: 2px;
+  }
+
+  .start-menu-sidebar {
+    width: 24px;
+  }
+
+  .sidebar-text {
+    font-size: 16px;
+  }
+
+  .start-item {
+    font-size: 14px;
+    padding: 8px 6px;
+    gap: 8px;
+  }
+
+  .start-submenu {
+    width: 100vw;
+    left: 0;
+  }
+
+  /* Window chrome thinner */
+  .window-header {
+    height: 30px;
+    padding: 2px 6px;
+  }
+
+  .window-title {
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  .win-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .window-controls {
+    gap: 4px;
+  }
+
+  .window-menu-bar {
+    height: 22px;
+    font-size: 12px;
+    gap: 8px;
+    padding: 0 6px;
+  }
+
+  .window-body {
+    padding: 8px;
+  }
+
+  .window-status-bar {
+    height: 18px;
+    font-size: 11px;
+  }
+
+  /* Typography scale down */
+  h1 {
+    font-size: 18px;
+  }
+
+  h2 {
+    font-size: 15px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  p {
+    font-size: 12px;
+  }
+
+  /* Boot screen */
+  .boot-screen {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .boot-header {
+    font-size: 11px;
+  }
+
+  .boot-log {
+    font-size: 11px;
+    min-height: 160px;
+  }
+
+  .boot-skip-hint {
+    font-size: 12px;
+  }
+
+  .boot-progress-container {
+    height: 18px;
+  }
+
+  /* Skills tabs wrap fully */
+  .tab-headers {
+    gap: 1px;
+  }
+
+  .tab-btn {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .tab-body {
+    padding: 8px;
+  }
+
+  .meter-label {
+    font-size: 13px;
+  }
+
+  .block-meter {
+    font-size: 11px;
+  }
+
+  /* Calculator compact */
+  .calc-grid {
+    gap: 3px;
+  }
+
+  .calc-btn {
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .calc-btn.btn-memory {
+    font-size: 12px;
+  }
+
+  .calc-display {
+    font-size: 24px;
+  }
+
+  .calc-expression {
+    font-size: 10px;
+  }
+
+  /* Contact form */
+  .mail-form {
+    gap: 8px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  /* Terminal compact */
+  .terminal-container {
+    font-size: 11px;
+    padding: 4px;
+  }
+
+  .terminal-banner {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .terminal-quick-btn {
+    font-size: 11px;
+    padding: 1px 3px;
+  }
+
+  /* Paint buttons */
+  .paint-tool-btn {
+    font-size: 11px;
+    padding: 3px 4px;
+  }
+
+  /* Alt+Tab compact */
+  .alt-tab-card {
+    width: 60px;
+    padding: 4px;
+  }
+
+  .alt-tab-card-icon {
+    font-size: 18px;
+  }
+
+  .alt-tab-card-title {
+    font-size: 10px;
+  }
+
+  /* BSOD compact */
+  .bsod-screen {
+    padding: 16px;
+  }
+
+  .bsod-content {
+    font-size: 12px;
+  }
+
+  .bsod-title {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE TOUCH HELPERS
+   ========================================================================== */
+@media (hover: none) and (pointer: coarse) {
+  /* Bigger touch targets for icons */
+  .desktop-icon {
+    min-height: 60px;
+    padding: 6px;
+  }
+
+  /* Remove hover effects that don't apply on touch */
+  .desktop-icon:hover {
+    background-color: transparent;
+  }
+
+  .desktop-icon.selected {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Larger buttons on touch devices */
+  button {
+    min-height: 36px;
+    padding: 4px 10px;
+  }
+
+  .win-btn {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  /* Start menu items bigger tap targets */
+  .start-item {
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .context-menu-item {
+    min-height: 36px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Scrollbar thinner on touch */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Better input sizes for touch */
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    font-size: 16px;
+    padding: 8px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE GAME TOUCH CONTROLS
+   ========================================================================== */
+.mobile-game-controls {
+  display: none;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.mobile-game-btn {
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel);
+  border: 2px solid;
+  border-color: #ffffff #444444 #444444 #ffffff;
+  color: var(--text-white);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.mobile-game-btn:active {
+  border-color: #444444 #ffffff #ffffff #444444;
+  background: #111111;
+}
+
+.mobile-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 3px;
+  justify-content: center;
+}
+
+.mobile-dpad-spacer {
+  visibility: hidden;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .mobile-game-controls {
+    display: flex;
   }
 }
 
