@@ -35,7 +35,7 @@ Beyond development, I'm building @nazrithm — a Creative Studio focused on desi
   quickFacts: [
     { label: "DEGREE", value: "B.Tech Computer Science (2022-2028)" },
     { label: "COLLEGE", value: "Arya College of Engineering, Jaipur" },
-    { label: "SPECIALTY", value: "Front-End Dev, AI Systems, Photography" },
+    { label: "SPECIALTY", value: "Front-End Dev, AI Systems, Cyber Security, Photography" },
     { label: "STUDIO", value: "Founder @nazrithm (Creative Studio)" },
     { label: "STATUS", value: "Available for Opportunities & Projects" }
   ]
@@ -57,20 +57,54 @@ const PROJECTS_DATA = [
     liveUrl: "#",
     repoUrl: "https://github.com/xyresiiic/AI-TRIAGE-PRO-Project-"
   },
+
   {
-    id: "nazrithm",
-    title: "Nazrithm Website",
-    tagline: "Featured · Creative Studio",
-    techStack: ["HTML", "CSS", "JavaScript", "UI/UX"],
-    shortDesc: "A creative studio website that helps brands, cafés, salons, and creators grow through eye-catching reels, professional designs, social media content, and brand strategy — where vision meets viral rhythm.",
-    features: [
-      "Sleek editorial dark aesthetic tailored for digital brands",
-      "Interactive studio portfolio showing video reels and brand kits",
-      "Seamless client onboarding contact integration"
-    ],
-    liveUrl: "https://nazrithm.vercel.app/#",
-    repoUrl: "https://github.com/xyresiiic"
-  },
+  id: "campuspass",
+  title: "CampusPass",
+  tagline: "Featured · Secure Biometric Attendance Portal",
+  techStack: [
+    "React",
+    "TypeScript",
+    "FastAPI",
+    "Python",
+    "Supabase",
+    "JWT",
+    "Geolocation"
+  ],
+  shortDesc: "A secure biometric attendance platform that enables college staff to mark attendance through their mobile devices after entering campus. Combines live camera-based face verification, GPS geofencing, and secure authentication with a Supabase-backed attendance system to reduce gate congestion and prevent unauthorized off-campus attendance.",
+  features: [
+    "Live camera-based face verification to help prevent photo uploads from the gallery",
+    "GPS-based campus geofencing to verify staff are within the approved campus area",
+    "Secure staff and admin authentication using JWT and hashed PINs",
+    "Real-time attendance check-in and check-out backed by Supabase",
+    "Admin dashboard for managing staff and reviewing attendance history",
+    "Attendance validation to prevent duplicate active check-ins"
+  ],
+  liveUrl: "https://campuspass-ignite.vercel.app/",
+  repoUrl: "https://github.com/xyresiiic/CampusPass-IGNITE"
+},
+
+  {
+  id: "phishlence",
+  title: "PhishLence",
+  tagline: "Featured · AI-Powered Phishing Detection",
+  techStack: [
+    "Python",
+    "Machine Learning",
+    "React",
+    "FastAPI",
+    "NLP",
+    "Cybersecurity"
+  ],
+  shortDesc: "An intelligent phishing detection platform designed to identify suspicious URLs, fraudulent websites, and potential online scams. Uses automated URL analysis and machine learning-based detection to help users recognize phishing threats and browse more safely.",
+  features: [
+    "Automated analysis of URLs to identify potential phishing attempts",
+    "Detection of common phishing indicators and suspicious URL patterns",
+    "Clear risk assessment to help users make safer browsing decisions"
+  ],
+  liveUrl: "https://phis-lens.vercel.app/",
+  repoUrl: "https://github.com/xyresiiic/PhisLens"
+},
   {
     id: "lustreva",
     title: "Lustréva",
@@ -146,19 +180,19 @@ const PROJECTS_DATA = [
 const SKILLS_DATA = {
   Programming: [
     { name: "C / C++", level: 90 },
-    { name: "Java", level: 80 },
-    { name: "Python", level: 40 }
+    { name: "Java", level: 60 },
+    { name: "Python", level: 30 }
 
   ],
   Frontend: [
-    { name: "HTML5 / CSS3", level: 95 },
-    { name: "JavaScript (ES6+)", level: 90 },
-    { name: "UI/UX & Responsive Layouts", level: 92 }
+    { name: "HTML5 / CSS3", level: 75 },
+    { name: "JavaScript (ES6+)", level: 60 },
+    { name: "UI/UX & Responsive Layouts", level: 95 }
   ],
   Backend_AI: [
-    { name: "Python & Flask", level: 85 },
-    { name: "AI/ML (Whisper, CLIP, Librosa)", level: 82 },
-    { name: "Transformers & Audio AI", level: 78 }
+    { name: "Python & Flask", level: 75 },
+    { name: "AI/ML (Whisper, CLIP, Librosa)", level: 62 },
+    { name: "Transformers & Audio AI", level: 68 }
   ],
   Creative: [
     { name: "Photography & Videography", level: 92 },
@@ -173,9 +207,18 @@ const SKILLS_DATA = {
 };
 
 const EXP_DATA = [
+
+  {
+  date: "2026",
+  role: "Cybersecurity Intern (2 Months)",
+  company: "Tripple One Solution",
+  desc: "Completed a two-month cybersecurity internship, gaining practical exposure to cybersecurity fundamentals, security analysis, vulnerability identification, and common cyber threats. Developed an understanding of security best practices and techniques for improving digital security.",
+  tech: "Cybersecurity, Network Security, Vulnerability Assessment, Threat Analysis"
+},
+
   {
     date: "2026",
-    role: "4th Place Winner",
+    role: "4th Place",
     company: "HackNexus 2.0 Hackathon",
     desc: "Built AI Triage Pro — a multimodal emergency triage system combining audio (Whisper/Librosa) and vision AI (CLIP) for real-time severity detection and ambulance dispatch recommendation.",
     tech: "AI/ML, Python, Flask, Whisper, CLIP"
